@@ -40,17 +40,19 @@ class season_data:
             # if idx < 4978:
             #     continue
             game = self.data[self.data['GameID'] == game_id]
+            # total_score = game['Team_score'].sum()
+            # over_under = float(game['Over Under'].iloc[0].split(':')[-1].strip())
+            # line = game['Betting Line'].iloc[0].split(' ')[-1]
             
+            # score_diff = np.abs(game['Team_score'].iloc[0] - game['Team_score'].iloc[1])
+            # print(f"betting line:{game['Betting Line'].iloc[0]}\nactual diff: {score_diff}")
+
             if game['Team_score'].iloc[0] > game['Team_score'].iloc[1]:
                 self.data.iloc[game.index[0], self.data.columns.get_loc('Win')] = 1
                 self.data.iloc[game.index[0], self.data.columns.get_loc('Loss')] = 0
                 self.data.iloc[game.index[1], self.data.columns.get_loc('Loss')] = 1
                 self.data.iloc[game.index[1], self.data.columns.get_loc('Win')] = 0
 
-                # game.loc[game['Team'] == game['Team'].iloc[0], 'Win'] = 1
-                # game.loc[game['Team'] == game['Team'].iloc[0], 'Loss'] = 0
-                # game.loc[game['Team'] == game['Team'].iloc[1], 'Loss'] = 1
-                # game.loc[game['Team'] == game['Team'].iloc[1], 'Win'] = 0
             else:
                 self.data.iloc[game.index[1], self.data.columns.get_loc('Win')] = 1
                 self.data.iloc[game.index[1], self.data.columns.get_loc('Loss')] = 0
@@ -58,10 +60,6 @@ class season_data:
                 self.data.iloc[game.index[0], self.data.columns.get_loc('Win')] = 0
 
 
-                # game.loc[game['Team'] == game['Team'].iloc[1], 'Win'] = 1
-                # game.loc[game['Team'] == game['Team'].iloc[1], 'Loss'] = 0
-                # game.loc[game['Team'] == game['Team'].iloc[0], 'Loss'] = 1
-                # game.loc[game['Team'] == game['Team'].iloc[0], 'Win'] = 0
 
     def possesions(self):
         self.data['Possessions'] = 0
@@ -125,16 +123,36 @@ class season_data:
 
 
         for idx, game_id in enumerate(self.data['GameID'].unique()):
-            if idx > 5:
-                break
+            
             game = self.data[self.data['GameID'] == game_id]
             game = game.copy()
             #calculate the effective field goal percentage for each team
             game.loc[:,'eFG'] = game.apply(lambda row: (row['FG_made'] + 0.5*row['3PT_made'])/row['FG_attempted'], axis=1)
+            #calculate the turnover percentage for each team
+            game.loc[:,'TOV'] = game.apply(lambda row: row['Total Turnovers']/(row['FG_attempted'] + 0.44*row['FT_attempted'] + row['Total Turnovers']), axis=1)
+            
             self.data.iloc[game.index[0], self.data.columns.get_loc('off_eFG')] = game['eFG'].iloc[0]
             self.data.iloc[game.index[1], self.data.columns.get_loc('off_eFG')] = game['eFG'].iloc[1]
             self.data.iloc[game.index[0], self.data.columns.get_loc('def_eFG')] = game['eFG'].iloc[1]
             self.data.iloc[game.index[1], self.data.columns.get_loc('def_eFG')] = game['eFG'].iloc[0]
+
+            self.data.iloc[game.index[0], self.data.columns.get_loc('off_TOV')] = game['TOV'].iloc[0]
+            self.data.iloc[game.index[1], self.data.columns.get_loc('off_TOV')] = game['TOV'].iloc[1]
+            self.data.iloc[game.index[0], self.data.columns.get_loc('def_TOV')] = game['TOV'].iloc[1]
+            self.data.iloc[game.index[1], self.data.columns.get_loc('def_TOV')] = game['TOV'].iloc[0]
+
+            self.data.iloc[game.index[0], self.data.columns.get_loc('off_ORB')] = game['Offensive Rebounds'].iloc[0]/(game['Offensive Rebounds'].iloc[0] + game['Defensive Rebounds'].iloc[1])
+            self.data.iloc[game.index[1], self.data.columns.get_loc('off_ORB')] = game['Offensive Rebounds'].iloc[1]/(game['Offensive Rebounds'].iloc[1] + game['Defensive Rebounds'].iloc[0])
+            
+            self.data.iloc[game.index[0], self.data.columns.get_loc('def_ORB')] = game['Defensive Rebounds'].iloc[0]/(game['Offensive Rebounds'].iloc[1] + game['Defensive Rebounds'].iloc[0])
+            self.data.iloc[game.index[1], self.data.columns.get_loc('def_ORB')] = game['Defensive Rebounds'].iloc[1]/(game['Offensive Rebounds'].iloc[0] + game['Defensive Rebounds'].iloc[1])
+
+            #calculate free throw rate for each team
+            game.loc[:,'FTR'] = game.apply(lambda row: row['FT_attempted']/row['FG_attempted'], axis=1)
+            self.data.iloc[game.index[0], self.data.columns.get_loc('off_FTR')] = game['FTR'].iloc[0]
+            self.data.iloc[game.index[1], self.data.columns.get_loc('off_FTR')] = game['FTR'].iloc[1]
+            self.data.iloc[game.index[0], self.data.columns.get_loc('def_FTR')] = game['FTR'].iloc[1]
+            self.data.iloc[game.index[1], self.data.columns.get_loc('def_FTR')] = game['FTR'].iloc[0]
 
 
     
@@ -257,11 +275,11 @@ season.data = season.data[~season.data['GameID'].isin(row_drop)].reset_index(dro
 season.split_columns()
 
 season.win_game()
-# season.possesions()
+season.possesions()
 season.four_factors()
-# season.home_away()
+season.home_away()
 
-print(season.data[['Team','Win','Loss','off_eFG','def_eFG']].head(15))
-# season.data.to_excel('cleaned_data.xlsx', index = False)
-# print(season.data.columns)
+print(season.data.head(15))
+season.data.to_excel('cleaned_data.xlsx', index = False)
+print('completed')
 
