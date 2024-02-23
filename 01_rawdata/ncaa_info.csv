@@ -1,0 +1,362 @@
+School_Type,Division,name,ESPN_Name,address,member
+Public,NCAA D1,New Jersey Institute of Technology,NJIT Highlanders,"Newark, New Jersey",America East Conference
+Public,NCAA D1,SUNY Binghamton University,Binghamton Bearcats,"Vestal, New York",America East Conference
+Public,NCAA D1,SUNY University at Albany,UAlbany Great Danes,"Albany, New York",America East Conference
+Public,NCAA D1,University of Maine,Maine Black Bears,"Orono, Maine",America East Conference
+Public,NCAA D1,University of Maryland at Baltimore County,UMBC Retrievers,"Baltimore, Maryland",America East Conference
+Public,NCAA D1,University of Massachusetts at Lowell,UMass Lowell River Hawks,"Lowell, Massachusetts",America East Conference
+Public,NCAA D1,University of New Hampshire,New Hampshire Wildcats,"Durham, New Hampshire",America East Conference
+Public,NCAA D1,University of Vermont,Vermont Catamounts,"Burlington, Vermont",America East Conference
+Public,NCAA D1,East Carolina University,East Carolina Pirates,"Greenville, North Carolina",American Athletic Conference
+Public,NCAA D1,Temple University,Temple Owls,"Philadelphia, Pennsylvania",American Athletic Conference
+Public,NCAA D1,University of Central Florida,UCF Knights,"Orlando, Florida",American Athletic Conference
+Public,NCAA D1,University of Cincinnati,Cincinnati Bearcats,"Cincinnati, Ohio",American Athletic Conference
+Public,NCAA D1,University of Houston,Houston Cougars,"Houston, Texas",American Athletic Conference
+Public,NCAA D1,University of Memphis,Memphis Tigers,"Memphis, Tennessee",American Athletic Conference
+Public,NCAA D1,University of South Florida,South Florida Bulls,"Tampa, Florida",American Athletic Conference
+Public,NCAA D1,Wichita State University,Wichita State Shockers,"Wichita, Kansas",American Athletic Conference
+Public,NCAA D1,Austin Peay State University,Austin Peay Governors,"Clarksville, Tennessee",ASUN Conference
+Public,NCAA D1,Eastern Kentucky University,Eastern Kentucky Colonels,"Richmond, Kentucky",ASUN Conference
+Public,NCAA D1,Florida Gulf Coast University,Florida Gulf Coast Eagles,"Fort Myers, Florida",ASUN Conference
+Public,NCAA D1,Jacksonville State University,Jacksonville State Gamecocks,"Jacksonville, Alabama",ASUN Conference
+Public,NCAA D1,Kennesaw State University,Kennesaw State Owls,"Kennesaw, Georgia",ASUN Conference
+Public,NCAA D1,University of Central Arkansas,Central Arkansas Bears,"Conway, Arkansas",ASUN Conference
+Public,NCAA D1,University of North Alabama,North Alabama Lions,"Florence, Alabama",ASUN Conference
+Public,NCAA D1,University of North Florida,North Florida Ospreys,"Jacksonville, Florida",ASUN Conference
+Public,NCAA D1,George Mason University,George Mason Patriots,"Fairfax, Virginia",Atlantic 10 Conference
+Public,NCAA D1,University of Massachusetts at Amherst,Massachusetts Minutemen,"Amherst, Massachusetts",Atlantic 10 Conference
+Public,NCAA D1,University of Rhode Island,Rhode Island Rams,"Kingston, Rhode Island",Atlantic 10 Conference
+Public,NCAA D1,Virginia Commonwealth University,VCU Rams,"Richmond, Virginia",Atlantic 10 Conference
+Public,NCAA D1,Clemson University,Clemson Tigers,"Clemson, South Carolina",Atlantic Coast Conference
+Public,NCAA D1,Florida State University,Florida State Seminoles,"Tallahassee, Florida",Atlantic Coast Conference
+Public,NCAA D1,Georgia Tech,Georgia Tech Yellow Jackets,"Atlanta, Georgia",Atlantic Coast Conference
+Public,NCAA D1,North Carolina State University,NC State Wolfpack,"Raleigh, North Carolina",Atlantic Coast Conference
+Public,NCAA D1,University of Louisville,Louisville Cardinals,"Louisville, Kentucky",Atlantic Coast Conference
+Public,NCAA D1,University of North Carolina at Chapel Hill,North Carolina Tar Heels,"Chapel Hill, North Carolina",Atlantic Coast Conference
+Public,NCAA D1,University of Pittsburgh,Pittsburgh Panthers,"Pittsburgh, Pennsylvania",Atlantic Coast Conference
+Public,NCAA D1,University of Virginia,Virginia Cavaliers,"Charlottesville, Virginia",Atlantic Coast Conference
+Public,NCAA D1,Virginia Tech,Virginia Tech Hokies,"Blacksburg, Virginia",Atlantic Coast Conference
+Public,NCAA D1,Iowa State University,Iowa State Cyclones,"Ames, Iowa",Big 12 Conference
+Public,NCAA D1,Kansas State University,Kansas State Wildcats,"Manhattan, Kansas",Big 12 Conference
+Public,NCAA D1,Oklahoma State University,Oklahoma State Cowboys,"Stillwater, Oklahoma",Big 12 Conference
+Public,NCAA D1,Texas Tech University,Texas Tech Red Raiders,"Lubbock, Texas",Big 12 Conference
+Public,NCAA D1,University of Kansas,Kansas Jayhawks,"Lawrence, Kansas",Big 12 Conference
+Public,NCAA D1,University of Oklahoma,Oklahoma Sooners,"Norman, Oklahoma",Big 12 Conference
+Public,NCAA D1,University of Texas at Austin,Texas Longhorns,"Austin, Texas",Big 12 Conference
+Public,NCAA D1,West Virginia University,West Virginia Mountaineers,"Morgantown, West Virginia",Big 12 Conference
+Public,NCAA D1,University of Connecticut,UConn Huskies,"Storrs, Connecticut",Big East Conference
+Public,NCAA D1,California State University at Sacramento,Sacramento State Hornets,"Sacramento, California",Big Sky Conference
+Public,NCAA D1,Eastern Washington University,Eastern Washington Eagles,"Cheney, Washington",Big Sky Conference
+Public,NCAA D1,Idaho State University,Idaho State Bengals,"Pocatello, Idaho",Big Sky Conference
+Public,NCAA D1,Montana State University,Montana State Bobcats,"Bozeman, Montana",Big Sky Conference
+Public,NCAA D1,Northern Arizona University,Northern Arizona Lumberjacks,"Flagstaff, Arizona",Big Sky Conference
+Public,NCAA D1,Portland State University,Portland State Vikings,"Portland, Oregon",Big Sky Conference
+Public,NCAA D1,University of Idaho,Idaho Vandals,"Moscow, Idaho",Big Sky Conference
+Public,NCAA D1,University of Montana,Montana Grizzlies,"Missoula, Montana",Big Sky Conference
+Public,NCAA D1,University of Northern Colorado,Northern Colorado Bears,"Greeley, Colorado",Big Sky Conference
+Public,NCAA D1,Weber State University,Weber State Wildcats,"Ogden, Utah",Big Sky Conference
+Public,NCAA D1,Longwood University,Longwood Lancers,"Farmville, Virginia",Big South Conference
+Public,NCAA D1,Radford University,Radford Highlanders,"Radford, Virginia",Big South Conference
+Public,NCAA D1,University of North Carolina Asheville,UNC Asheville Bulldogs,"Asheville, North Carolina",Big South Conference
+Public,NCAA D1,University of South Carolina at Upstate,South Carolina Upstate Spartans,"Spartanburg, South Carolina",Big South Conference
+Public,NCAA D1,Winthrop University,Winthrop Eagles,"Rock Hill, South Carolina",Big South Conference
+Public,NCAA D1,Indiana University,Indiana Hoosiers,"Bloomington, Indiana",Big Ten Conference
+Public,NCAA D1,Michigan State University,Michigan State Spartans,"East Lansing, Michigan",Big Ten Conference
+Public,NCAA D1,Ohio State University,Ohio State Buckeyes,"Columbus, Ohio",Big Ten Conference
+Public,NCAA D1,Penn State,Penn State Nittany Lions,"University Park, Pennsylvania",Big Ten Conference
+Public,NCAA D1,Purdue University,Purdue Boilermakers,"West Lafayette, Indiana",Big Ten Conference
+Public,NCAA D1,Rutgers University,Rutgers Scarlet Knights,"Piscataway, New Jersey",Big Ten Conference
+Public,NCAA D1,University of Illinois,Illinois Fighting Illini,"Champaign, Illinois",Big Ten Conference
+Public,NCAA D1,University of Iowa,Iowa Hawkeyes,"Iowa City, Iowa",Big Ten Conference
+Public,NCAA D1,University of Maryland,Maryland Terrapins,"College Park, Maryland",Big Ten Conference
+Public,NCAA D1,University of Michigan,Michigan Wolverines,"Ann Arbor, Michigan",Big Ten Conference
+Public,NCAA D1,University of Minnesota,Minnesota Golden Gophers,"Minneapolis, Minnesota",Big Ten Conference
+Public,NCAA D1,University of Nebraska,Nebraska Cornhuskers,"Lincoln, Nebraska",Big Ten Conference
+Public,NCAA D1,University of Wisconsin,Wisconsin Badgers,"Madison, Wisconsin",Big Ten Conference
+Public,NCAA D1,California Polytechnic State University at San Luis Obispo,Cal Poly Mustangs,"San Luis Obispo, California",Big West Conference
+Public,NCAA D1,California State University at Bakersfield,Cal State Bakersfield Roadrunners,"Bakersfield, California",Big West Conference
+Public,NCAA D1,California State University at Fullerton,Cal State Fullerton Titans,"Fullerton, California",Big West Conference
+Public,NCAA D1,California State University at Long Beach,Long Beach State Beach,"Long Beach, California",Big West Conference
+Public,NCAA D1,California State University at Northridge,Cal State Northridge Matadors,"Northridge, California",Big West Conference
+Public,NCAA D1,University of California at Davis,UC Davis Aggies,"Davis, California",Big West Conference
+Public,NCAA D1,University of California at Irvine,UC Irvine Anteaters,"Irvine, California",Big West Conference
+Public,NCAA D1,University of California at Riverside,UC Riverside Highlanders,"Riverside, California",Big West Conference
+Public,NCAA D1,University of California at San Diego,UC San Diego Tritons,"La Jolla, California",Big West Conference
+Public,NCAA D1,University of California at Santa Barbara,UC Santa Barbara Gauchos,"Santa Barbara, California",Big West Conference
+Public,NCAA D1,University of Hawaii at Manoa,Hawai'i Rainbow Warriors,"Honolulu, Hawaii",Big West Conference
+Public,NCAA D1,College of Charleston,Charleston Cougars,"Charleston, South Carolina",Colonial Athletic Association
+Public,NCAA D1,North Carolina A&T State University,North Carolina A&T Aggies,"Greensboro, North Carolina",Colonial Athletic Association
+Public,NCAA D1,SUNY Stony Brook University,Stony Brook Seawolves,"Stony Brook, New York",Colonial Athletic Association
+Public,NCAA D1,Towson University,Towson Tigers,"Towson, Maryland",Colonial Athletic Association
+Public,NCAA D1,University of Delaware,Delaware Blue Hens,"Newark, Delaware",Colonial Athletic Association
+Public,NCAA D1,University of North Carolina at Wilmington,UNC Wilmington Seahawks,"Wilmington, North Carolina",Colonial Athletic Association
+Public,NCAA D1,William & Mary,William & Mary Tribe,"Williamsburg, Virginia",Colonial Athletic Association
+Public,NCAA D1,Florida Atlantic University,Florida Atlantic Owls,"Boca Raton, Florida",Conference USA
+Public,NCAA D1,Florida International University,Florida International Panthers,"Miami, Florida",Conference USA
+Public,NCAA D1,Louisiana Tech University,Louisiana Tech Bulldogs,"Ruston, Louisiana",Conference USA
+Public,NCAA D1,Middle Tennessee State University,Middle Tennessee Blue Raiders,"Murfreesboro, Tennessee",Conference USA
+Public,NCAA D1,University of Alabama at Birmingham,UAB Blazers,"Birmingham, Alabama",Conference USA
+Public,NCAA D1,University of North Carolina at Charlotte,Charlotte 49ers,"Charlotte, North Carolina",Conference USA
+Public,NCAA D1,University of North Texas,North Texas Mean Green,"Denton, Texas",Conference USA
+Public,NCAA D1,University of Texas at El Paso,UTEP Miners,"El Paso, Texas",Conference USA
+Public,NCAA D1,University of Texas at San Antonio,UTSA Roadrunners,"San Antonio, Texas",Conference USA
+Public,NCAA D1,Western Kentucky University,Western Kentucky Hilltoppers,"Bowling Green, Kentucky",Conference USA
+Public,NCAA D1,Cleveland State University,Cleveland State Vikings,"Cleveland, Ohio",Horizon League
+Public,NCAA D1,Indiana University-Purdue University at Indianapolis (IUPUI),IUPUI Jaguars,"Indianapolis, Indiana",Horizon League
+Public,NCAA D1,Northern Kentucky University,Northern Kentucky Norse,"Highland Heights, Kentucky",Horizon League
+Public,NCAA D1,Oakland University,Oakland Golden Grizzlies,"Rochester, Michigan",Horizon League
+Public,NCAA D1,Purdue University at Fort Wayne,Purdue Fort Wayne Mastodons,"Fort Wayne, Indiana",Horizon League
+Public,NCAA D1,University of Wisconsin at Green Bay,Green Bay Phoenix,"Green Bay, Wisconsin",Horizon League
+Public,NCAA D1,University of Wisconsin at Milwaukee,Milwaukee Panthers,"Milwaukee, Wisconsin",Horizon League
+Public,NCAA D1,Wright State University,Wright State Raiders,"Dayton, Ohio",Horizon League
+Public,NCAA D1,Youngstown State University,Youngstown State Penguins,"Youngstown, Ohio",Horizon League
+Public,NCAA D1,Chicago State University,Chicago State Cougars,"Chicago, Illinois",Independent
+Public,NCAA D1,Ball State University,Ball State Cardinals,"Muncie, Indiana",Mid-American Conference
+Public,NCAA D1,Bowling Green State University,Bowling Green Falcons,"Bowling Green, Ohio",Mid-American Conference
+Public,NCAA D1,Central Michigan University,Central Michigan Chippewas,"Mount Pleasant, Michigan",Mid-American Conference
+Public,NCAA D1,Eastern Michigan University,Eastern Michigan Eagles,"Ypsilanti, Michigan",Mid-American Conference
+Public,NCAA D1,Kent State University,Kent State Golden Flashes,"Kent, Ohio",Mid-American Conference
+Public,NCAA D1,Miami University,Miami (OH) RedHawks,"Oxford, Ohio",Mid-American Conference
+Public,NCAA D1,Northern Illinois University,Northern Illinois Huskies,"DeKalb, Illinois",Mid-American Conference
+Public,NCAA D1,Ohio University,Ohio Bobcats,"Athens, Ohio",Mid-American Conference
+Public,NCAA D1,SUNY Buffalo State College,Buffalo Bulls,"Buffalo, New York",Mid-American Conference
+Public,NCAA D1,University of Akron,Akron Zips,"Akron, Ohio",Mid-American Conference
+Public,NCAA D1,University of Toledo,Toledo Rockets,"Toledo, Ohio",Mid-American Conference
+Public,NCAA D1,Western Michigan University,Western Michigan Broncos,"Kalamazoo, Michigan",Mid-American Conference
+Public,NCAA D1,Coppin State University,Coppin State Eagles,"Baltimore, Maryland",Mid-Eastern Athletic Conf.
+Public,NCAA D1,Delaware State University,Delaware State Hornets,"Dover, Delaware",Mid-Eastern Athletic Conf.
+Public,NCAA D1,Morgan State University,Morgan State Bears,"Baltimore, Maryland",Mid-Eastern Athletic Conf.
+Public,NCAA D1,Norfolk State University,Norfolk State Spartans,"Norfolk, Virginia",Mid-Eastern Athletic Conf.
+Public,NCAA D1,North Carolina Central University,North Carolina Central Eagles,"Durham, North Carolina",Mid-Eastern Athletic Conf.
+Public,NCAA D1,South Carolina State University,South Carolina State Bulldogs,"Orangeburg, South Carolina",Mid-Eastern Athletic Conf.
+Public,NCAA D1,University of Maryland Eastern Shore,Maryland-Eastern Shore Hawks,"Princess Anne, Maryland",Mid-Eastern Athletic Conf.
+Public,NCAA D1,Illinois State University,Illinois State Redbirds,"Normal, Illinois",Missouri Valley Conference
+Public,NCAA D1,Indiana State University,Indiana State Sycamores,"Terre Haute, Indiana",Missouri Valley Conference
+Public,NCAA D1,Missouri State University,Missouri State Bears,"Springfield, Missouri",Missouri Valley Conference
+Public,NCAA D1,Murray State University,Murray State Racers,"Murray, Kentucky",Missouri Valley Conference
+Public,NCAA D1,Southern Illinois University Carbondale,Southern Illinois Salukis,"Carbondale, Illinois",Missouri Valley Conference
+Public,NCAA D1,University of Illinois at Chicago,UIC Flames,"Chicago, Illinois",Missouri Valley Conference
+Public,NCAA D1,University of Northern Iowa,Northern Iowa Panthers,"Cedar Falls, Iowa",Missouri Valley Conference
+Public,NCAA D1,Boise State University,Boise State Broncos,"Boise, Idaho",Mountain West Conference
+Public,NCAA D1,California State University at Fresno,Fresno State Bulldogs,"Fresno, California",Mountain West Conference
+Public,NCAA D1,Colorado State University,Colorado State Rams,"Fort Collins, Colorado",Mountain West Conference
+Public,NCAA D1,San Diego State University,San Diego State Aztecs,"San Diego, California",Mountain West Conference
+Public,NCAA D1,San Jose State University,San José State Spartans,"San Jose, California",Mountain West Conference
+Public,NCAA D1,United States Air Force Academy,Air Force Falcons,"USAFA, Colorado",Mountain West Conference
+Public,NCAA D1,University of Nevada at Las Vegas,UNLV Rebels,"Las Vegas, Nevada",Mountain West Conference
+Public,NCAA D1,University of Nevada at Reno,Nevada Wolf Pack,"Reno, Nevada",Mountain West Conference
+Public,NCAA D1,University of New Mexico,New Mexico Lobos,"Albuquerque, New Mexico",Mountain West Conference
+Public,NCAA D1,University of Wyoming,Wyoming Cowboys,"Laramie, Wyoming",Mountain West Conference
+Public,NCAA D1,Utah State University,Utah State Aggies,"Logan, Utah",Mountain West Conference
+Public,NCAA D1,Central Connecticut State University,Central Connecticut Blue Devils,"New Britain, Connecticut",Northeast Conference
+Public,NCAA D1,Eastern Illinois University,Eastern Illinois Panthers,"Charleston, Illinois",Ohio Valley Conference
+Public,NCAA D1,Morehead State University,Morehead State Eagles,"Morehead, Kentucky",Ohio Valley Conference
+Public,NCAA D1,Southeast Missouri State University,Southeast Missouri State Redhawks,"Cape Girardeau, Missouri",Ohio Valley Conference
+Public,NCAA D1,Southern Illinois University Edwardsville,SIU Edwardsville Cougars,"Edwardsville, Illinois",Ohio Valley Conference
+Public,NCAA D1,Tennessee State University,Tennessee State Tigers,"Nashville, Tennessee",Ohio Valley Conference
+Public,NCAA D1,Tennessee Technological University,Tennessee Tech Golden Eagles,"Cookeville, Tennessee",Ohio Valley Conference
+Public,NCAA D1,University of Arkansas at Little Rock,Little Rock Trojans,"Little Rock, Arkansas",Ohio Valley Conference
+Public,NCAA D1,University of Southern Indiana,Southern Indiana Screaming Eagles,"Evansville, Indiana",Ohio Valley Conference
+Public,NCAA D1,University of Tennessee at Martin,UT Martin Skyhawks,"Martin, Tennessee",Ohio Valley Conference
+Public,NCAA D1,Arizona State University,Arizona State Sun Devils,"Tempe, Arizona",Pac-12 Conference
+Public,NCAA D1,Oregon State University,Oregon State Beavers,"Corvallis, Oregon",Pac-12 Conference
+Public,NCAA D1,University of Arizona,Arizona Wildcats,"Tucson, Arizona",Pac-12 Conference
+Public,NCAA D1,University of California at Berkeley,California Golden Bears,"Berkeley, California",Pac-12 Conference
+Public,NCAA D1,University of California at Los Angeles at UCLA,UCLA Bruins,"Los Angeles, California",Pac-12 Conference
+Public,NCAA D1,University of Colorado at Boulder,Colorado Buffaloes,"Boulder, Colorado",Pac-12 Conference
+Public,NCAA D1,University of Oregon,Oregon Ducks,"Eugene, Oregon",Pac-12 Conference
+Public,NCAA D1,University of Utah,Utah Utes,"Salt Lake City, Utah",Pac-12 Conference
+Public,NCAA D1,University of Washington,Washington Huskies,"Seattle, Washington",Pac-12 Conference
+Public,NCAA D1,Washington State University,Washington State Cougars,"Pullman, Washington",Pac-12 Conference
+Public,NCAA D1,United States Military Academy,Army Black Knights,"West Point, New York",Patriot League
+Public,NCAA D1,United States Naval Academy,Navy Midshipmen,"Annapolis, Maryland",Patriot League
+Public,NCAA D1,Auburn University,Auburn Tigers,"Auburn, Alabama",Southeastern Conference
+Public,NCAA D1,Louisiana State University (LSU),LSU Tigers,"Baton Rouge, Louisiana",Southeastern Conference
+Public,NCAA D1,Mississippi State University,Mississippi State Bulldogs,"Mississippi State, Mississippi",Southeastern Conference
+Public,NCAA D1,Texas A&M University,Texas A&M Aggies,"College Station, Texas",Southeastern Conference
+Public,NCAA D1,University of Alabama,Alabama Crimson Tide,"Tuscaloosa, Alabama",Southeastern Conference
+Public,NCAA D1,University of Arkansas,Arkansas Razorbacks,"Fayetteville, Arkansas",Southeastern Conference
+Public,NCAA D1,University of Florida,Florida Gators,"Gainesville, Florida",Southeastern Conference
+Public,NCAA D1,University of Georgia,Georgia Bulldogs,"Athens, Georgia",Southeastern Conference
+Public,NCAA D1,University of Kentucky,Kentucky Wildcats,"Lexington, Kentucky",Southeastern Conference
+Public,NCAA D1,University of Mississippi,Ole Miss Rebels,"University, Mississippi",Southeastern Conference
+Public,NCAA D1,University of Missouri,Missouri Tigers,"Columbia, Missouri",Southeastern Conference
+Public,NCAA D1,University of South Carolina,South Carolina Gamecocks,"Columbia, South Carolina",Southeastern Conference
+Public,NCAA D1,University of Tennessee,Tennessee Volunteers,"Knoxville, Tennessee",Southeastern Conference
+Public,NCAA D1,East Tennessee State University,East Tennessee State Buccaneers,"Johnson City, Tennessee",Southern Conference
+Public,NCAA D1,The Citadel,The Citadel Bulldogs,"Charleston, South Carolina",Southern Conference
+Public,NCAA D1,University of North Carolina at Greensboro,UNC Greensboro Spartans,"Greensboro, North Carolina",Southern Conference
+Public,NCAA D1,University of Tennessee at Chattanooga,Chattanooga Mocs,"Chattanooga, Tennessee",Southern Conference
+Public,NCAA D1,Virginia Military Institute at VMI,VMI Keydets,"Lexington, Virginia",Southern Conference
+Public,NCAA D1,Western Carolina University,Western Carolina Catamounts,"Cullowhee, North Carolina",Southern Conference
+Public,NCAA D1,Lamar University,Lamar Cardinals,"Beaumont, Texas",Southland Conference
+Public,NCAA D1,McNeese State University,McNeese Cowboys,"Lake Charles, Louisiana",Southland Conference
+Public,NCAA D1,Nicholls State University,Nicholls Colonels,"Thibodaux, Louisiana",Southland Conference
+Public,NCAA D1,Northwestern State University of Louisiana,Northwestern State Demons,"Natchitoches, Louisiana",Southland Conference
+Public,NCAA D1,Southeastern Louisiana University,SE Louisiana Lions,"Hammond, Louisiana",Southland Conference
+Public,NCAA D1,Texas A&M University at Commerce,Texas A&M-Commerce Lions,"Commerce, Texas",Southland Conference
+Public,NCAA D1,Texas A&M University at Corpus Christi,Texas A&M-Corpus Christi Islanders,"Corpus Christi, Texas",Southland Conference
+Public,NCAA D1,University of New Orleans,New Orleans Privateers,"New Orleans, Louisiana",Southland Conference
+Public,NCAA D1,Alabama A&M University,Alabama A&M Bulldogs,"Normal, Alabama",Southwestern Athletic Conf.
+Public,NCAA D1,Alabama State University,Alabama State Hornets,"Montgomery, Alabama",Southwestern Athletic Conf.
+Public,NCAA D1,Alcorn State University,Alcorn State Braves,"Alcorn, Mississippi",Southwestern Athletic Conf.
+Public,NCAA D1,Florida A&M University,Florida A&M Rattlers,"Tallahassee, Florida",Southwestern Athletic Conf.
+Public,NCAA D1,Grambling State University,Grambling Tigers,"Grambling, Louisiana",Southwestern Athletic Conf.
+Public,NCAA D1,Jackson State University,Jackson State Tigers,"Jackson, Mississippi",Southwestern Athletic Conf.
+Public,NCAA D1,Mississippi Valley State University,Mississippi Valley State Delta Devils,"Itta Bena, Mississippi",Southwestern Athletic Conf.
+Public,NCAA D1,Prairie View A & M University,Prairie View A&M Panthers,"Prairie View, Texas",Southwestern Athletic Conf.
+Public,NCAA D1,Southern University & A&M College,Southern Jaguars,"Baton Rouge, Louisiana",Southwestern Athletic Conf.
+Public,NCAA D1,Texas Southern University,Texas Southern Tigers,"Houston, Texas",Southwestern Athletic Conf.
+Public,NCAA D1,University of Arkansas at Pine Bluff,Arkansas-Pine Bluff Golden Lions,"Pine Bluff, Arkansas",Southwestern Athletic Conf.
+Public,NCAA D1,Appalachian State University,Appalachian State Mountaineers,"Boone, North Carolina",Sun Belt Conference
+Public,NCAA D1,Arkansas State University,Arkansas State Red Wolves,"Jonesboro, Arkansas",Sun Belt Conference
+Public,NCAA D1,Coastal Carolina University,Coastal Carolina Chanticleers,"Conway, South Carolina",Sun Belt Conference
+Public,NCAA D1,Georgia Southern University,Georgia Southern Eagles,"Statesboro, Georgia",Sun Belt Conference
+Public,NCAA D1,Georgia State University,Georgia State Panthers,"Atlanta, Georgia",Sun Belt Conference
+Public,NCAA D1,James Madison University,James Madison Dukes,"Harrisonburg, Virginia",Sun Belt Conference
+Public,NCAA D1,Marshall University,Marshall Thundering Herd,"Huntington, West Virginia",Sun Belt Conference
+Public,NCAA D1,Old Dominion University,Old Dominion Monarchs,"Norfolk, Virginia",Sun Belt Conference
+Public,NCAA D1,Texas State University,Texas State Bobcats,"San Marcos, Texas",Sun Belt Conference
+Public,NCAA D1,Troy University,Troy Trojans,"Troy, Alabama",Sun Belt Conference
+Public,NCAA D1,University of Louisiana,Louisiana Ragin' Cajuns,"Lafayette, Louisiana",Sun Belt Conference
+Public,NCAA D1,University of Louisiana at Monroe,UL Monroe Warhawks,"Monroe, Louisiana",Sun Belt Conference
+Public,NCAA D1,University of South Alabama,South Alabama Jaguars,"Mobile, Alabama",Sun Belt Conference
+Public,NCAA D1,University of Southern Mississippi,Southern Miss Golden Eagles,"Hattiesburg, Mississippi",Sun Belt Conference
+Public,NCAA D1,North Dakota State University,North Dakota State Bison,"Fargo, North Dakota",The Summit League
+Public,NCAA D1,South Dakota State University,South Dakota State Jackrabbits,"Brookings, South Dakota",The Summit League
+Public,NCAA D1,University of Missouri at Kansas City,Kansas City Roos,"Kansas City, Missouri",The Summit League
+Public,NCAA D1,University of Nebraska at Omaha,Omaha Mavericks,"Omaha, Nebraska",The Summit League
+Public,NCAA D1,University of North Dakota,North Dakota Fighting Hawks,"Grand Forks, North Dakota",The Summit League
+Public,NCAA D1,University of South Dakota,South Dakota Coyotes,"Vermillion, South Dakota",The Summit League
+Public,NCAA D1,Western Illinois University,Western Illinois Leathernecks,"Macomb, Illinois",The Summit League
+Public,NCAA D1,New Mexico State University,New Mexico State Aggies,"Las Cruces, New Mexico",Western Athletic Conference
+Public,NCAA D1,Sam Houston State University,Sam Houston Bearkats,"Huntsville, Texas",Western Athletic Conference
+Public,NCAA D1,Southern Utah University,Southern Utah Thunderbirds,"Cedar City, Utah",Western Athletic Conference
+Public,NCAA D1,Stephen F Austin State University,Stephen F. Austin Lumberjacks,"Nacogdoches, Texas",Western Athletic Conference
+Public,NCAA D1,Tarleton State University,Tarleton State Texans,"Stephenville, Texas",Western Athletic Conference
+Public,NCAA D1,University of Texas at Arlington,UT Arlington Mavericks,"Arlington, Texas",Western Athletic Conference
+Public,NCAA D1,University of Texas at Rio Grande Valley,UT Rio Grande Valley Vaqueros,"Edinburg, Texas",Western Athletic Conference
+Public,NCAA D1,Utah Tech University (Formerly Dixie State University),Utah Tech Trailblazers,"Saint George, Utah",Western Athletic Conference
+Public,NCAA D1,Utah Valley University,Utah Valley Wolverines,"Orem, Utah",Western Athletic Conference
+Private,NCAA D1,Bryant University,Bryant Bulldogs,"Smithfield, Rhode Island",America East Conference
+Private,NCAA D1,Southern Methodist University at SMU,SMU Mustangs,"Dallas, Texas",American Athletic Conference
+Private,NCAA D1,Tulane University,Tulane Green Wave,"New Orleans, Louisiana",American Athletic Conference
+Private,NCAA D1,University of Tulsa,Tulsa Golden Hurricane,"Tulsa, Oklahoma",American Athletic Conference
+Private,NCAA D1,Bellarmine University,Bellarmine Knights,"Louisville, Kentucky",ASUN Conference
+Private,NCAA D1,Jacksonville University,Jacksonville Dolphins,"Jacksonville, Florida",ASUN Conference
+Private,NCAA D1,Liberty University,Liberty Flames,"Lynchburg, Virginia",ASUN Conference
+Private,NCAA D1,Lipscomb University,Lipscomb Bisons,"Nashville, Tennessee",ASUN Conference
+Private,NCAA D1,Queens University of Charlotte,Queens University Royals,"Charlotte, North Carolina",ASUN Conference
+Private,NCAA D1,Stetson University,Stetson Hatters,"DeLand, Florida",ASUN Conference
+Private,NCAA D1,Davidson College,Davidson Wildcats,"Davidson, North Carolina",Atlantic 10 Conference
+Private,NCAA D1,Duquesne University,Duquesne Dukes,"Pittsburgh, Pennsylvania",Atlantic 10 Conference
+Private,NCAA D1,Fordham University,Fordham Rams,"Bronx, New York",Atlantic 10 Conference
+Private,NCAA D1,George Washington University,George Washington Revolutionaries,"Washington, District Of Columbia",Atlantic 10 Conference
+Private,NCAA D1,La Salle University,La Salle Explorers,"Philadelphia, Pennsylvania",Atlantic 10 Conference
+Private,NCAA D1,Loyola University Chicago,Loyola Chicago Ramblers,"Chicago, Illinois",Atlantic 10 Conference
+Private,NCAA D1,Saint Joseph's University,Saint Joseph's Hawks,"Philadelphia, Pennsylvania",Atlantic 10 Conference
+Private,NCAA D1,Saint Louis University,Saint Louis Billikens,"St. Louis, Missouri",Atlantic 10 Conference
+Private,NCAA D1,St. Bonaventure University,St. Bonaventure Bonnies,"Saint Bonaventure, New York",Atlantic 10 Conference
+Private,NCAA D1,University of Dayton,Dayton Flyers,"Dayton, Ohio",Atlantic 10 Conference
+Private,NCAA D1,University of Richmond,Richmond Spiders,"Richmond, Virginia",Atlantic 10 Conference
+Private,NCAA D1,Boston College,Boston College Eagles,"Chestnut Hill, Massachusetts",Atlantic Coast Conference
+Private,NCAA D1,Duke University,Duke Blue Devils,"Durham, North Carolina",Atlantic Coast Conference
+Private,NCAA D1,Syracuse University,Syracuse Orange,"Syracuse, New York",Atlantic Coast Conference
+Private,NCAA D1,University of Miami,Miami Hurricanes,"Coral Gables, Florida",Atlantic Coast Conference
+Private,NCAA D1,University of Notre Dame,Notre Dame Fighting Irish,"Notre Dame, Indiana",Atlantic Coast Conference
+Private,NCAA D1,Wake Forest University,Wake Forest Demon Deacons,"Winston-Salem, North Carolina",Atlantic Coast Conference
+Private,NCAA D1,Baylor University,Baylor Bears,"Waco, Texas",Big 12 Conference
+Private,NCAA D1,Texas Christian University,TCU Horned Frogs,"Fort Worth, Texas",Big 12 Conference
+Private,NCAA D1,Butler University,Butler Bulldogs,"Indianapolis, Indiana",Big East Conference
+Private,NCAA D1,Creighton University,Creighton Bluejays,"Omaha, Nebraska",Big East Conference
+Private,NCAA D1,DePaul University,DePaul Blue Demons,"Chicago, Illinois",Big East Conference
+Private,NCAA D1,Georgetown University,Georgetown Hoyas,"Washington, District Of Columbia",Big East Conference
+Private,NCAA D1,Marquette University,Marquette Golden Eagles,"Milwaukee, Wisconsin",Big East Conference
+Private,NCAA D1,Providence College,Providence Friars,"Providence, Rhode Island",Big East Conference
+Private,NCAA D1,Seton Hall University,Seton Hall Pirates,"South Orange, New Jersey",Big East Conference
+Private,NCAA D1,St. John's University at New York,St. John's Red Storm,"Queens, New York",Big East Conference
+Private,NCAA D1,Villanova University,Villanova Wildcats,"Villanova, Pennsylvania",Big East Conference
+Private,NCAA D1,Xavier University,Xavier Musketeers,"Cincinnati, Ohio",Big East Conference
+Private,NCAA D1,Campbell University,Campbell Fighting Camels,"Buies Creek, North Carolina",Big South Conference
+Private,NCAA D1,Charleston Southern University,Charleston Southern Buccaneers,"Charleston, South Carolina",Big South Conference
+Private,NCAA D1,Gardner-Webb University,Gardner-Webb Runnin' Bulldogs,"Boiling Springs, North Carolina",Big South Conference
+Private,NCAA D1,High Point University,High Point Panthers,"High Point, North Carolina",Big South Conference
+Private,NCAA D1,Presbyterian College,Presbyterian Blue Hose,"Clinton, South Carolina",Big South Conference
+Private,NCAA D1,Northwestern University,Northwestern Wildcats,"Evanston, Illinois",Big Ten Conference
+Private,NCAA D1,Drexel University,Drexel Dragons,"Philadelphia, Pennsylvania",Colonial Athletic Association
+Private,NCAA D1,Elon University,Elon Phoenix,"Elon, North Carolina",Colonial Athletic Association
+Private,NCAA D1,Hampton University,Hampton Pirates,"Hampton, Virginia",Colonial Athletic Association
+Private,NCAA D1,Hofstra University,Hofstra Pride,"Hempstead, New York",Colonial Athletic Association
+Private,NCAA D1,Monmouth University,Monmouth Hawks,"West Long Branch, New Jersey",Colonial Athletic Association
+Private,NCAA D1,Northeastern University,Northeastern Huskies,"Boston, Massachusetts",Colonial Athletic Association
+Private,NCAA D1,Rice University,Rice Owls,"Houston, Texas",Conference USA
+Private,NCAA D1,Robert Morris University at Pennsylvania,Robert Morris Colonials,"Moon Township, Pennsylvania",Horizon League
+Private,NCAA D1,University of Detroit Mercy,Detroit Mercy Titans,"Detroit, Michigan",Horizon League
+Private,NCAA D1,Canisius College,Canisius Golden Griffins,"Buffalo, New York",Metro Atlantic Athletic Conference
+Private,NCAA D1,Fairfield University,Fairfield Stags,"Fairfield, Connecticut",Metro Atlantic Athletic Conference
+Private,NCAA D1,Iona University,Iona Gaels,"New Rochelle, New York",Metro Atlantic Athletic Conference
+Private,NCAA D1,Manhattan College,Manhattan Jaspers,"Riverdale, New York",Metro Atlantic Athletic Conference
+Private,NCAA D1,Marist College,Marist Red Foxes,"Poughkeepsie, New York",Metro Atlantic Athletic Conference
+Private,NCAA D1,Mount St. Mary's University,Mount St. Mary's Mountaineers,"Emmitsburg, Maryland",Metro Atlantic Athletic Conference
+Private,NCAA D1,Niagara University,Niagara Purple Eagles,"Niagara University, New York",Metro Atlantic Athletic Conference
+Private,NCAA D1,Quinnipiac University,Quinnipiac Bobcats,"Hamden, Connecticut",Metro Atlantic Athletic Conference
+Private,NCAA D1,Rider University,Rider Broncs,"Lawrenceville, New Jersey",Metro Atlantic Athletic Conference
+Private,NCAA D1,Saint Peter's University,Saint Peter's Peacocks,"Jersey City, New Jersey",Metro Atlantic Athletic Conference
+Private,NCAA D1,Siena College,Siena Saints,"Loudonville, New York",Metro Atlantic Athletic Conference
+Private,NCAA D1,Howard University,Howard Bison,"Washington, District Of Columbia",Mid-Eastern Athletic Conf.
+Private,NCAA D1,Belmont University,Belmont Bruins,"Nashville, Tennessee",Missouri Valley Conference
+Private,NCAA D1,Bradley University,Bradley Braves,"Peoria, Illinois",Missouri Valley Conference
+Private,NCAA D1,Drake University,Drake Bulldogs,"Des Moines, Iowa",Missouri Valley Conference
+Private,NCAA D1,University of Evansville,Evansville Purple Aces,"Evansville, Indiana",Missouri Valley Conference
+Private,NCAA D1,Valparaiso University,Valparaiso Beacons,"Valparaiso, Indiana",Missouri Valley Conference
+Private,NCAA D1,Fairleigh Dickinson University,Fairleigh Dickinson Knights,"Teaneck, New Jersey",Northeast Conference
+Private,NCAA D1,Long Island University,Long Island University Sharks,"Long Island, New York",Northeast Conference
+Private,NCAA D1,Merrimack College,Merrimack Warriors,"North Andover, MASSACHUSETTS",Northeast Conference
+Private,NCAA D1,Sacred Heart University,Sacred Heart Pioneers,"Fairfield, Connecticut",Northeast Conference
+Private,NCAA D1,Saint Francis University,St. Francis (PA) Red Flash,"Loretto, Pennsylvania",Northeast Conference
+Private,NCAA D1,Stonehill College,Stonehill Skyhawks,"Easton, Massachusetts",Northeast Conference
+Private,NCAA D1,Wagner College,Wagner Seahawks,"Staten Island, New York",Northeast Conference
+Private,NCAA D1,Lindenwood University,Lindenwood Lions,"Saint Charles, Missouri",Ohio Valley Conference
+Private,NCAA D1,Stanford University,Stanford Cardinal,"Stanford, California",Pac-12 Conference
+Private,NCAA D1,University of Southern California,USC Trojans,"Los Angeles, California",Pac-12 Conference
+Private,NCAA D1,American University,American University Eagles,"Washington, District Of Columbia",Patriot League
+Private,NCAA D1,Boston University,Boston University Terriers,"Boston, Massachusetts",Patriot League
+Private,NCAA D1,Bucknell University,Bucknell Bison,"Lewisburg, Pennsylvania",Patriot League
+Private,NCAA D1,Colgate University,Colgate Raiders,"Hamilton, New York",Patriot League
+Private,NCAA D1,College of the Holy Cross,Holy Cross Crusaders,"Worcester, Massachusetts",Patriot League
+Private,NCAA D1,Lafayette College,Lafayette Leopards,"Easton, Pennsylvania",Patriot League
+Private,NCAA D1,Lehigh University,Lehigh Mountain Hawks,"Bethlehem, Pennsylvania",Patriot League
+Private,NCAA D1,Loyola University Maryland,Loyola Maryland Greyhounds,"Baltimore, Maryland",Patriot League
+Private,NCAA D1,Vanderbilt University,Vanderbilt Commodores,"Nashville, Tennessee",Southeastern Conference
+Private,NCAA D1,Furman University,Furman Paladins,"Greenville, South Carolina",Southern Conference
+Private,NCAA D1,Mercer University,Mercer Bears,"Macon, Georgia",Southern Conference
+Private,NCAA D1,Samford University,Samford Bulldogs,"Birmingham, Alabama",Southern Conference
+Private,NCAA D1,Wofford College,Wofford Terriers,"Spartanburg, South Carolina",Southern Conference
+Private,NCAA D1,Houston Christian University,Houston Christian Huskies,"Houston, Texas",Southland Conference
+Private,NCAA D1,University of the Incarnate Word,Incarnate Word Cardinals,"San Antonio, Texas",Southland Conference
+Private,NCAA D1,Bethune-Cookman University,Bethune-Cookman Wildcats,"Daytona Beach, Florida",Southwestern Athletic Conf.
+Private,NCAA D1,Brown University,Brown Bears,"Providence, Rhode Island",The Ivy League
+Private,NCAA D1,Columbia University,Columbia Lions,"New York, New York",The Ivy League
+Private,NCAA D1,Cornell University,Cornell Big Red,"Ithaca, New York",The Ivy League
+Private,NCAA D1,Dartmouth College,Dartmouth Big Green,"Hanover, New Hampshire",The Ivy League
+Private,NCAA D1,Harvard University,Harvard Crimson,"Cambridge, Massachusetts",The Ivy League
+Private,NCAA D1,Princeton University,Princeton Tigers,"Princeton, New Jersey",The Ivy League
+Private,NCAA D1,University of Pennsylvania at Penn,Pennsylvania Quakers,"Philadelphia, Pennsylvania",The Ivy League
+Private,NCAA D1,Yale University,Yale Bulldogs,"New Haven, Connecticut",The Ivy League
+Private,NCAA D1,Oral Roberts University,Oral Roberts Golden Eagles,"Tulsa, Oklahoma",The Summit League
+Private,NCAA D1,University of Denver,Denver Pioneers,"Denver, Colorado",The Summit League
+Private,NCAA D1,University of St. Thomas (Minnesota),St. Thomas-Minnesota Tommies,"St. Paul, Minnesota",The Summit League
+Private,NCAA D1,Brigham Young University,BYU Cougars,"Provo, Utah",West Coast Conference
+Private,NCAA D1,Gonzaga University,Gonzaga Bulldogs,"Spokane, Washington",West Coast Conference
+Private,NCAA D1,Loyola Marymount University,Loyola Marymount Lions,"Los Angeles, California",West Coast Conference
+Private,NCAA D1,Pepperdine University,Pepperdine Waves,"Malibu, California",West Coast Conference
+Private,NCAA D1,Saint Mary's College of California,Saint Mary's Gaels,"Moraga, California",West Coast Conference
+Private,NCAA D1,Santa Clara University,Santa Clara Broncos,"Santa Clara, California",West Coast Conference
+Private,NCAA D1,University of Portland,Portland Pilots,"Portland, Oregon",West Coast Conference
+Private,NCAA D1,University of San Diego,San Diego Toreros,"San Diego, California",West Coast Conference
+Private,NCAA D1,University of San Francisco,San Francisco Dons,"San Francisco, California",West Coast Conference
+Private,NCAA D1,University of the Pacific,Pacific Tigers,"Stockton, California",West Coast Conference
+Private,NCAA D1,Abilene Christian University,Abilene Christian Wildcats,"Abilene, Texas",Western Athletic Conference
+Private,NCAA D1,California Baptist University,California Baptist Lancers,"Riverside, California",Western Athletic Conference
+Private,NCAA D1,Grand Canyon University,Grand Canyon Lopes,"Phoenix, Arizona",Western Athletic Conference
+Private,NCAA D1,Seattle University,Seattle U Redhawks,"Seattle, Washington",Western Athletic Conference
