@@ -9,6 +9,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 import time
 
 # https://www.ncsasports.org/division-1-colleges 
@@ -59,8 +62,6 @@ class season_data:
                 self.data.iloc[game.index[0], self.data.columns.get_loc('Loss')] = 1
                 self.data.iloc[game.index[0], self.data.columns.get_loc('Win')] = 0
 
-
-
     def possesions(self):
         self.data['Possessions'] = 0
         self.data['Team_Possessions'] = 0
@@ -93,8 +94,7 @@ class season_data:
             self.data.iloc[game.index[1], self.data.columns.get_loc('Team_Possessions')] = game['Team_Possessions'].iloc[1]
             self.data.iloc[game.index[0], self.data.columns.get_loc('Pace')] = game['Team_Possessions'].iloc[0]/40
             self.data.iloc[game.index[1], self.data.columns.get_loc('Pace')] = game['Team_Possessions'].iloc[1]/40
-
-        
+ 
     def four_factors(self):
         #calculate the four factors for each team
         #1. Effective Field Goal Percentage
@@ -154,13 +154,11 @@ class season_data:
             self.data.iloc[game.index[0], self.data.columns.get_loc('def_FTR')] = game['FTR'].iloc[1]
             self.data.iloc[game.index[1], self.data.columns.get_loc('def_FTR')] = game['FTR'].iloc[0]
 
-
-    
     def home_away(self):
 
         def get_coordinates(city_name):
             geolocator = Nominatim(user_agent="city_distance_calculator")
-            location = geolocator.geocode(city_name, timeout=10)
+            location = geolocator.geocode(city_name, timeout=5)
             if location:
                 return (location.latitude, location.longitude)
             else:
@@ -182,7 +180,9 @@ class season_data:
         self.data['Distance_Traveled'] = 0
         game_ids = self.data['GameID'].unique()
         t1 = time.time()
+        
         for idx, game_id in enumerate(game_ids):
+            print(f"processing game {idx+1} of {len(game_ids)}; {((idx+1)/len(game_ids)*100):0.2f}% complete")
             game = self.data[self.data['GameID'] == game_id]
             team1 = game['Team'].iloc[0]
             team2 = game['Team'].iloc[1]
@@ -213,7 +213,8 @@ class season_data:
         elif t2-t1 > 3600:
             print(f'time to calculate distances: {(t2-t1)/3600} hours')
             
-        
+    def ridge_regress(self):
+        pass       
 
 ###########################################
 ####### ------- MAIN CODE ------- #########
