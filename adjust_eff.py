@@ -11,7 +11,9 @@ import matplotlib.pyplot as plt
 #https://medium.com/analyzing-ncaa-college-basketball-with-gcp/fitting-it-in-adjusting-team-metrics-for-schedule-strength-4e8239be0530
 #https://colab.research.google.com/drive/13L4b36cTrnC55ahD6dVf4-r9pzkYV-j5#scrollTo=TQ1zmrOMYSBh 
 
-file = r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\02_cleandata\cleaned_data.xlsx'
+soi = '2023_2024'
+
+file = rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\02_cleandata\{soi}_cleaned_data.xlsx'
 
 df = pd.read_excel(file)
 
@@ -74,15 +76,21 @@ for stat in stats_to_adjust:
     adjusted_dict[stat] = adjusted_df
     # print(adjusted_df.tail(15))
 
+adjusted_team_df = pd.DataFrame()
+
 # adjusted metric becomes: 
 # for each row in the dataframe, find the team and the name of the opponent and also the home court advantage
 # adjusted metric becomes: raw metric - home court advantage - opponent metric
     
 for key in adjusted_dict:
+
+    adjusted_team_df.loc[:,key] = adjusted_dict[key][key]
+    index = adjusted_dict[key]['coef_name']
     for idx, row in df.iterrows():
         raw_metric = row[key]
         opponent = row['Opponent']
         adf = adjusted_dict[key]
+       
         if row['Home'] == 1:
             home_adv = adf[adf['coef_name']=='Home'][key].values[0]
         else:
@@ -93,9 +101,11 @@ for key in adjusted_dict:
         df.loc[idx,'adj_'+key] = raw_metric - adj_opp_metric - home_adv
         # print(f"raw metric: {raw_metric:0.2f}, adjusted metric: {row['adj_'+key]:0.2f},\n {homeaway} opponent rating: {adj_opp_metric:0.2f} opponent: {opponent}, {winloss}")
         # print(adj_team_metric)
-print(df[['Team','Opponent','GameID','Win','Loss','Raw_Off_Eff','adj_Raw_Off_Eff','Raw_Def_Eff','adj_Raw_Def_Eff']])
-
-# df.to_excel(r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\adjusted_data.xlsx')
+# print(df[['Team','Opponent','GameID','Win','Loss','Raw_Off_Eff','adj_Raw_Off_Eff','Raw_Def_Eff','adj_Raw_Def_Eff']])
+adjusted_team_df.set_index(index, inplace = True)
+print(adjusted_team_df)
+adjusted_team_df.to_excel(rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\{soi}_adjusted_team_data.xlsx')
+df.to_excel(rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\{soi}_adjusted_data.xlsx')
 
 # team_of_interest = 'Baylor Bears'
 # sdf = df[df['Team'] == team_of_interest]

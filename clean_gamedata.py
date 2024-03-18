@@ -221,7 +221,7 @@ class season_data:
 ###########################################
 
 
-bp = r'C:\Users\zhostetl\Documents\11_CBB\01_rawdata'
+bp = r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\01_rawdata'
 
 seasons = ['2022_2023', '2023_2024']
 data_dict = {}
@@ -230,7 +230,7 @@ for season in seasons:
     season_path = os.path.join(bp, season_file)
     data_dict[season] = pd.read_excel(season_path)
 
-soi = '2022_2023'
+soi = '2023_2024'
 
 ncaa_team_info =  pd.read_csv(os.path.join(bp, 'ncaa_info.csv'))
 
@@ -239,12 +239,12 @@ ncaa_team_info =  pd.read_csv(os.path.join(bp, 'ncaa_info.csv'))
 ### ---- MANUAL DATA CLEANING CHECKS ----- ####
 ###############################################
 
-# print(data_dict[soi].columns)
+print(data_dict[soi].columns)
 
-# for column in data_dict[soi].columns:
-#     print(f"NaNs in {column}: {data_dict[soi][column].isna().sum()} {data_dict[soi][data_dict[soi][column].isna()].index}")
+for column in data_dict[soi].columns:
+    print(f"NaNs in {column}: {data_dict[soi][column].isna().sum()} {data_dict[soi][data_dict[soi][column].isna()].index}")
 
-# print(data_dict[soi].isna().sum())
+print(data_dict[soi].isna().sum())
 
 ###############################################
 ### ---- Calculate relevant metrics ------ ####
@@ -269,9 +269,8 @@ season.data = season.data[~season.data['GameID'].isin(row_drop)].reset_index(dro
 
 # print(season.data.dtypes)
 
-# season.data.to_excel('cleaned_data.xlsx', index = False)
-# for idx, row in season.data.iterrows():
-#     print(row['3PT'].split('-'))
+# season.data = season.data.iloc[0:200]
+
       
 season.split_columns()
 
@@ -280,7 +279,7 @@ season.possesions()
 season.four_factors()
 season.home_away()
 
-print(season.data.head(15))
-season.data.to_excel('cleaned_data.xlsx', index = False)
-print('completed')
+print(season.data.tail(15))
+season.data.to_excel(f'{soi}_cleaned_data.xlsx', index = False)
+# print('completed')
 

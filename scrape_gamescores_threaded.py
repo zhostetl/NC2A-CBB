@@ -274,10 +274,11 @@ retries = 3
 ###### 401577535 game canceled ######
 ###### 401577670 game hasn't happened yet ######
 
-game_id_file = r'C:\Users\zhostetl\Documents\11_CBB\2022_2023_completed_game_ids.csv'
+game_id_file = r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\2023_2024_completed_game_ids_update.csv'
 game_df = pd.read_csv(game_id_file)
 game_ids = game_df['game_id'].tolist()
 
+output_name = '2023_2024_team_stats_update.xlsx'
 
 
 # ideas to pull from : https://github.com/lbenz730/ncaahoopR 
@@ -300,7 +301,7 @@ for game in games:
     df = pd.concat([df,game.team_stats],axis = 0).reset_index(drop=True)
 
 print(df)
-df.to_excel('2022_2023_team_stats.xlsx',index = False)
+df.to_excel(output_name,index = False)
 
 elapsed_time = time.time()-t1
 if elapsed_time > 60:

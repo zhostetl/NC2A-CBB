@@ -53,11 +53,11 @@ class scrape_gameids():
                 
 
 
-test_date = date(2022, 11, 7)
+test_date = date(2024, 1, 25)
 # test_date = date(2023, 1, 26)
 
 
-end_date = date(2023, 3, 12)
+end_date = date(2024, 3, 8)
 
 completed_game_ids = []
 no_games = [date(2022, 12, 24), date(2022,12,25), date(2022, 12, 26)]
@@ -81,4 +81,4 @@ while test_date < end_date:
 print(f'Number of completed games: {len(completed_game_ids)}')
 
 completed_game_ids = pd.DataFrame(completed_game_ids, columns = ['game_id'])
-completed_game_ids.to_csv('2022_2023_completed_game_ids.csv', index = False)
+completed_game_ids.to_csv('2023_2024_completed_game_ids_update.csv', index = False)
