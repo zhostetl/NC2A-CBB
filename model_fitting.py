@@ -10,8 +10,8 @@ from sklearn.model_selection import train_test_split
 import joblib
 
 
-files = [r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2022_2023_adjusted_data.xlsx',
-         r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2023_2024_adjusted_data.xlsx']
+files = [r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2022_2023_adjusted_data_EM.xlsx',
+         r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2023_2024_adjusted_data_EM.xlsx']
 
 df = pd.concat([pd.read_excel(f,index_col=0) for f in files])
 
@@ -29,7 +29,7 @@ params = ['Distance_Traveled',
           'adj_Raw_Off_Eff','adj_off_eFG','adj_off_TOV','adj_off_ORB','adj_off_FTR',
           'adj_Raw_Def_Eff','adj_def_eFG','adj_def_TOV','adj_def_ORB','adj_def_FTR',
           'Pace','Total Turnovers','Fouls','FG_attempted','3PT_attempted',
-          'Team_Possessions','Home','Away']
+          'Team_Possessions','Home','Away','adj_EM']
 # params = ['Distance_Traveled','adj_Raw_Off_Eff','adj_Raw_Def_Eff']
 y = ['Team_score']
 # Prepare the data
@@ -37,7 +37,7 @@ X = df[params].values
 y = df[y].values
 scaler = StandardScaler()
 X = scaler.fit_transform(X)
-joblib.dump(scaler, r'03_modelfitting\scaler.pkl')
+joblib.dump(scaler, r'03_modelfitting\scaler_EM.pkl')
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 print(f"X_train shape: {X_train.shape}, X_test shape: {X_test.shape}, y_train shape: {y_train.shape}, y_test shape: {y_test.shape}")
@@ -63,8 +63,8 @@ criterion = nn.MSELoss()
 optimizer = torch.optim.SGD(ANNreg.parameters(), lr=learning_rate)
 
 # Train the model
-# num_epochs = 7000
-num_epochs = 50000
+num_epochs = 7000
+# num_epochs = 50000
 losses = torch.zeros(num_epochs)
 
 # y = scaler.fit_transform(y)
@@ -96,7 +96,7 @@ predictions = ANNreg(X_test)
 testloss = criterion(predictions, y_test)
 print(f"final loss: {testloss:0.2f}")
 
-torch.save(ANNreg.state_dict(), r'03_modelfitting\ANNreg_deep_train.pth')
+torch.save(ANNreg.state_dict(), r'03_modelfitting\ANNreg_EM_train.pth')
 #rescale the predictions
 # predictions = scaler.inverse_transform(predictions.detach().numpy())
 # y = scaler.inverse_transform(y.detach().numpy())

@@ -10,6 +10,7 @@ import torch.nn as nn
 from sklearn.preprocessing import StandardScaler
 import joblib
 import copy
+import matplotlib.pyplot as plt
 
 #define the tournament matchups 
 big_12_matchups = {'round_1':{'team1': ['Oklahoma State Cowboys','West Virginia Mountaineers'],
@@ -157,6 +158,8 @@ class matchup():
     def simulate_game(self):
         team1_scores = np.array([])
         team2_scores = np.array([])
+        fig, ax = plt.subplots()
+        print(self.stats[self.team1])
         for i in range(self.number_of_games):
             x1 = self.stats[self.team1].iloc[i][self.model_params].values.reshape(1,-1)
             x2 = self.stats[self.team2].iloc[i][self.model_params].values.reshape(1,-1)
@@ -168,11 +171,19 @@ class matchup():
             team2_score = ANNreg(x2)
             team1_scores = np.append(team1_scores, team1_score.detach().numpy())
             team2_scores = np.append(team2_scores, team2_score.detach().numpy())
+            # print(f"mean team 1: {team1_scores.mean()}, mean team 2: {team2_scores.mean()}")
+            # print(f"team 1 score: {team1_score.detach().numpy()}, team 2 score: {team2_score.detach().numpy()}")
+            # ax.plot(i, team1_score.detach(),'bo')
+            # ax.plot(i, team2_score.detach(),'ro')
 
             if team1_score.detach().numpy() > team2_score.detach().numpy():
                 self.team1_wins += 1
             else:
                 self.team2_wins += 1
+        ax.set_title(f'{self.team1} vs {self.team2} Scores')
+        ax.set_xlabel('Game Number')
+        ax.set_ylabel('Score')
+        
         self.team1_winprob = self.team1_wins/self.number_of_games
         self.team2_winprob = self.team2_wins/self.number_of_games
         self.team1_predscore = team1_scores.mean()
@@ -268,5 +279,5 @@ indiv_game = matchup(dataframe=test_df, team1='Baylor Bears', team2='Cincinnati 
 indiv_game.vary_stats()
 indiv_game.simulate_game()
 print(f"{indiv_game.team1} score: {indiv_game.team1_predscore:0.2f}, {indiv_game.team2} score: {indiv_game.team2_predscore:0.2f}")
-
+plt.show()
 

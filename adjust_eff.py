@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 #https://medium.com/analyzing-ncaa-college-basketball-with-gcp/fitting-it-in-adjusting-team-metrics-for-schedule-strength-4e8239be0530
 #https://colab.research.google.com/drive/13L4b36cTrnC55ahD6dVf4-r9pzkYV-j5#scrollTo=TQ1zmrOMYSBh 
 
-soi = '2023_2024'
+# soi = '2023_2024'
+soi = '2022_2023'
 
 file = rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\02_cleandata\{soi}_cleaned_data.xlsx'
 
@@ -46,6 +47,7 @@ dummy_df = pd.get_dummies(df[['Team','Opponent','Home']])
 # def_eFg, def_TOV, def_ORB, def_FTR
 stats_to_adjust = ['Raw_Off_Eff','Raw_Def_Eff','off_eFG','off_TOV','off_ORB','off_FTR','def_eFG','def_TOV','def_ORB','def_FTR']
 # stats_to_adjust = ['Raw_Off_Eff','Raw_Def_Eff']
+# stats_to_adjust = ['Raw_Def_Eff']
 adjusted_dict = {}
 for stat in stats_to_adjust:
     rdcv = linear_model.RidgeCV(alphas = [0.1,0.5,1,2,3,4,5,10,15], fit_intercept = True)
@@ -77,15 +79,17 @@ for stat in stats_to_adjust:
     # print(adjusted_df.tail(15))
 
 adjusted_team_df = pd.DataFrame()
-
+# plt.show()
 # adjusted metric becomes: 
 # for each row in the dataframe, find the team and the name of the opponent and also the home court advantage
 # adjusted metric becomes: raw metric - home court advantage - opponent metric
-    
+print("\n\napplying the adjusted metrics to the dataframe\n\n")
 for key in adjusted_dict:
 
     adjusted_team_df.loc[:,key] = adjusted_dict[key][key]
+    
     index = adjusted_dict[key]['coef_name']
+    # intercept_val = adjusted_dict[key]['intercept'][0]
     for idx, row in df.iterrows():
         raw_metric = row[key]
         opponent = row['Opponent']
@@ -99,13 +103,16 @@ for key in adjusted_dict:
         adj_team_metric = adf[adf['coef_name']==row['Team']][key].values[0] #dont think we actually need this
         adj_opp_metric = adf[adf['coef_name']==f"Opponent_{opponent}"][key].values[0] 
         df.loc[idx,'adj_'+key] = raw_metric - adj_opp_metric - home_adv
+        # df.loc[idx,'intercept'] = intercept_val
         # print(f"raw metric: {raw_metric:0.2f}, adjusted metric: {row['adj_'+key]:0.2f},\n {homeaway} opponent rating: {adj_opp_metric:0.2f} opponent: {opponent}, {winloss}")
         # print(adj_team_metric)
 # print(df[['Team','Opponent','GameID','Win','Loss','Raw_Off_Eff','adj_Raw_Off_Eff','Raw_Def_Eff','adj_Raw_Def_Eff']])
 adjusted_team_df.set_index(index, inplace = True)
-print(adjusted_team_df)
-adjusted_team_df.to_excel(rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\{soi}_adjusted_team_data.xlsx')
-df.to_excel(rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\{soi}_adjusted_data.xlsx')
+df.loc[:,'adj_EM'] = df.apply(lambda x: (x['adj_Raw_Off_Eff'] - x['adj_Raw_Def_Eff']), axis = 1)
+# print(adjusted_team_df.head())
+print(df.head())
+# adjusted_team_df.to_excel(rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\{soi}_adjusted_team_data.xlsx')
+df.to_excel(rf'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\{soi}_adjusted_data_EM.xlsx')
 
 # team_of_interest = 'Baylor Bears'
 # sdf = df[df['Team'] == team_of_interest]
