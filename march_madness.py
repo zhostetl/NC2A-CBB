@@ -10,10 +10,11 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
+import time
 
 def get_coordinates(city_name):
     geolocator = Nominatim(user_agent="city_distance_calculator")
-    location = geolocator.geocode(city_name, timeout=5)
+    location = geolocator.geocode(city_name, timeout=15)
     if location:
         return (location.latitude, location.longitude)
     
@@ -65,7 +66,7 @@ NN_PARAMS = ['Distance_Traveled',
           'Pace','Total Turnovers','Fouls','FG_attempted','3PT_attempted',
           'Team_Possessions','Home','Away','adj_EM']
 
-NUM_GAMES = 2
+NUM_GAMES = 500
 
 test_df = pd.read_excel(r'.\03_modelfitting\2023_2024_adjusted_data_EM.xlsx',index_col=0)
 
@@ -106,7 +107,7 @@ class team:
 
 class matchup:
     def __init__(self, team1, team2, game_location, num_games=50, game_id= None, game_round=None, next_round = None, current_round = None, region=None,
-                  vary_params = None, model_params=None, season_data=None, ridge_df=None, standardizer=None,summary_stats=None,tournament_sim = None):
+                  vary_params = None, model_params=None, season_data=None, ridge_df=None, standardizer=None,summary_stats=None,tournament_sim = None,probability_dict=None):
         self.team1 = team1
         self.team2 = team2
         self.game_location = game_location
@@ -134,13 +135,27 @@ class matchup:
         self.current_round = current_round
         self.summary_stats = summary_stats
         self.tournament_sim = tournament_sim
+
+        self.game_string = f"{self.team1.team_name} vs {self.team2.team_name}"
+        
+        if self.game_string not in probability_dict:
+            probability_dict[self.game_string] = {self.team1.team_name:0, f"{self.team1.team_name}_score":0,
+                                            self.team2.team_name:0, f"{self.team2.team_name}_score":0}
+        
     
     def vary_stats(self):
         teams = [self.team1, self.team2]
         self.team_data = {}
         for team in teams:
-            team_dist = calculate_distance(self.game_location, ncaa_team_info[ncaa_team_info['ESPN_Name'] == team.team_name]['address'].values[0])
-        
+            if self.game_location not in distance_mapper[team.team_name]:
+                team_dist = calculate_distance(self.game_location, ncaa_team_info[ncaa_team_info['ESPN_Name'] == team.team_name]['address'].values[0])
+                distance_mapper[team.team_name][self.game_location] = team_dist
+                # print('used distance method')
+            else:
+                team_dist = distance_mapper[team.team_name][self.game_location]
+                # print('used dictionary method')
+            # team_dist = calculate_distance(self.game_location, ncaa_team_info[ncaa_team_info['ESPN_Name'] == team.team_name]['address'].values[0])
+            
             team_df = self.season_data[self.season_data['Team'] == team.team_name][self.vary_params]
             means = team_df.mean()
             stds = team_df.std()
@@ -225,6 +240,12 @@ class matchup:
 
         self.team1_score = team1_scores.mean()
         self.team2_score = team2_scores.mean()
+
+        prob_mapper[self.game_string][self.team1.team_name] = self.team1_winprob
+        prob_mapper[self.game_string][f"{self.team1.team_name}_score"] = self.team1_score
+        prob_mapper[self.game_string][self.team2.team_name] = self.team2_winprob
+        prob_mapper[self.game_string][f"{self.team2.team_name}_score"] = self.team2_score
+        prob_mapper[self.game_string]['flag'] = True
         
         # print(f"{self.team1.team_name} win probability: {self.team1_winprob:0.2f}, {self.team2.team_name} win probability: {self.team2_winprob:0.2f}")
 
@@ -250,8 +271,8 @@ class matchup:
                 self.upset = False
 
     def game_summary(self):
-        # print(f"{self.team1.team_name} win probability: {self.team1_winprob:0.2f}, {self.team2.team_name} win probability: {self.team2_winprob:0.2f}")
-        # print(f"{self.game_winner} wins!")
+        print(f"{self.team1.team_name} win probability: {self.team1_winprob:0.2f}, {self.team2.team_name} win probability: {self.team2_winprob:0.2f}")
+        print(f"{self.game_winner} wins!")
         print(f"{self.team1.team_name} ({self.team1.team_seed}) vs {self.team2.team_name} ({self.team2.team_seed})\n"
               f"----------------------------------------------\n"
               f"score: {self.team1_score:0.2f} vs {self.team2_score:0.2f}\n"
@@ -266,7 +287,7 @@ class matchup:
         for game, teams in self.game_mapper.items():
             if self.game_id in teams:
                 self.next_game = game
-                print(f"{self.game_winner} advances to {game} of {self.next_round} in the {self.region}!\n")
+                # print(f"{self.game_winner} advances to {game} of {self.next_round} in the {self.region}!\n")
                 if self.next_round == 'final four':
                     self.game_round[self.winning_team.region] = self.winning_team
                 elif self.next_round == 'championship':
@@ -278,12 +299,37 @@ class matchup:
                 # print(self.summary_stats)
             # print(f"{self.game_winner} win probability: {self.game_winner_prob:0.2f}") 
 
+    def short_game(self):
+        random_number = random.random()
+        team1_win = prob_mapper[self.game_string][self.team1.team_name]
+        team2_win = prob_mapper[self.game_string][self.team2.team_name]
+        if random_number < team1_win:
+            self.game_winner = self.team1.team_name
+            self.game_winner_prob = self.team1_winprob
+            self.winning_team = self.team1
+            if self.team1.team_seed > self.team2.team_seed:
+                self.upset = True
+            else:
+                self.upset = False
+        else:
+            self.game_winner = self.team2.team_name
+            self.game_winner_prob = self.team2_winprob
+            self.winning_team = self.team2
+            if self.team2.team_seed > self.team1.team_seed:
+                self.upset = True
+            else:
+                self.upset = False
+
 ###################################################################################################### 
 ##### --------------------------- STARTING THE TOURNAMENT ---------------------------------------- ###
 ######################################################################################################
 
+distance_mapper = {team:{} for team in all_teams}
+
+prob_mapper = {}
+
 tourney_locs = {'round of 32':{'East':{'Game_1':'Brooklyn, NY',
-                                       'Game_2':'Spoakne, WA',
+                                       'Game_2':'Spokane, WA',
                                        'Game_3':'Omaha, NE',
                                         'Game_4':'Omaha, NE'
                                         },
@@ -329,35 +375,222 @@ tourney_locs = {'round of 32':{'East':{'Game_1':'Brooklyn, NY',
 
 game_rounds = ['round of 64','round of 32','sweet 16','Elite 8','final four','championship']
 summary_tournament = pd.DataFrame(columns = game_rounds,index=all_teams,data=0)
-NUM_TOURNAMENTS = 2
-for tidx in range(1,NUM_TOURNAMENTS+1):
+good_regions = ['East','West','Midwest','South']
+NUM_TOURNAMENTS = 50
+# for tidx in range(1,NUM_TOURNAMENTS+1):
+#     t1 = time.time()
+#     round_32 = {'East':{'Game_1':[],
+#                         'Game_2':[],
+#                         'Game_3':[],
+#                         'Game_4':[]},
+#                 'West':{'Game_1':[],
+#                         'Game_2':[],
+#                         'Game_3':[],
+#                         'Game_4':[]},
+#                 'Midwest':{'Game_1':[],
+#                         'Game_2':[],
+#                         'Game_3':[],
+#                         'Game_4':[]},
+#                 'South':{'Game_1':[],
+#                         'Game_2':[],
+#                         'Game_3':[],
+#                         'Game_4':[]
+#                         }
+#                 }
+#     good_regions = ['East','West','Midwest','South']
+#     for region in regions:
+#         if region not in good_regions:
+#             continue
+#         # if region !='East':
+#         #     continue
+#         current_round = 'round of 64'
+#         print(f"\n\n starting {current_round}\n\n")
+#         for game in first_round:
+#             # fig, ax = plt.subplots()
+#             sdf = df[(df['Game'] == game) & (df['Region']==region)]
+#             game_loc = sdf['Location'].values[0]
+#             game_id = sdf['Game'].values[0]
+#             team1 = team(team_name=sdf['Team'].values[0], team_seed=sdf['Seed'].values[0], region=region)
+#             team2 = team(team_name=sdf['Team'].values[1], team_seed=sdf['Seed'].values[1], region=region)
+#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=game_id, game_round=round_32, next_round = 'round of 32',current_round = current_round,
+#                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+#                         summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
+#             if prob_mapper[game.game_string][team1.team_name] ==0:
+#                 game.vary_stats()
+#             # ax.hist(game.team_data[team1.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team1.team_name)
+#             # ax.hist(game.team_data[team2.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team2.team_name)
+#             # ax.legend()
+#             # ax.set_title(f"adjusted offensive efficiency for {team1.team_name} and {team2.team_name}")
+#                 game.simulate_game()
+#             else: 
+#                 game.short_game()
+#             game.game_summary()
+#             # round_32[game.next_game].append(game.game_winner)
+#     # plt.show()
+#     # print(summary_tournament)
+            
+#     round_16 = {'East':{'Game_1':[],
+#                         'Game_2':[]},
+#                 'West':{'Game_1':[],
+#                         'Game_2':[]},
+#                 'Midwest':{'Game_1':[],
+#                         'Game_2':[]},
+#                 'South':{'Game_1':[],
+#                         'Game_2':[]}
+#     }
+
+#     # print(round_32)
+  
+#     current_round = 'round of 32'
+#     print(f"\n\n starting {current_round}\n\n")
+#     for region in good_regions:
+
+#         for game, teams in round_32[region].items():
+#             game_loc = tourney_locs[current_round][region][game]
+#             # print(game_loc)
+#             team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
+#             team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
+#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=round_16, next_round= 'sweet 16',current_round = 'round of 32', 
+#                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+#                         summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
+#             if prob_mapper[game.game_string][team1.team_name] ==0:
+#                 game.vary_stats()
+#                 game.simulate_game()
+#             else:
+#                 game.short_game()
+#             game.game_summary()
+#             # game.vary_stats()
+#             # game.simulate_game()
+#             # game.game_summary()
+
+
+#     round_8 = {'East':{'Game_1':[]},
+#             'West':{'Game_1':[]},
+#                 'Midwest':{'Game_1':[]},
+#                 'South':{'Game_1':[]}
+#     }
+#     # print(f"\n\n starting next round\n\n")
+#     current_round = 'sweet 16'
+#     print(f"\n\n starting {current_round}\n\n")
+#     for region in good_regions:
+
+#         for game, teams in round_16[region].items():
+#             game_loc = tourney_locs[current_round][region][game]
+#             team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
+#             team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
+#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=round_8, next_round = 'Elite 8', current_round= current_round,
+#                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+#                         summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
+#             if prob_mapper[game.game_string][team1.team_name] ==0:
+#                 game.vary_stats()
+#                 game.simulate_game()
+#             else:
+#                 game.short_game()
+#             # game.vary_stats()
+#             # game.simulate_game()
+#             game.game_summary()
+
+#     final_four = {'East':None,
+#                 'West':None,
+#                 'Midwest':None,
+#                 'South':None}
+
+#     current_round = 'Elite 8'
+#     print(f"\n\n starting {current_round}\n\n")
+#     for region in good_regions:
+
+#         for game, teams in round_8[region].items():
+#             game_loc = tourney_locs[current_round][region][game]
+#             team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
+#             team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
+#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=final_four, next_round = 'final four',current_round=current_round,
+#                         region=None, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+#                         summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
+#             if prob_mapper[game.game_string][team1.team_name] ==0:
+#                 game.vary_stats()
+#                 game.simulate_game()
+#             else:
+#                 game.short_game()
+#             # game.vary_stats()
+#             # game.simulate_game()
+#             game.game_summary()
+
+#     # print(final_four)
+#     current_round = 'final four'
+#     print(f"\n\n starting {current_round}\n\n")
+#     ff_matchup = {'Game_1':[final_four['East'],final_four['West']],
+#                 'Game_2':[final_four['Midwest'],final_four['South']]}
+
+#     championship = {'Game_1':[]}
+
+#     for game, teams in ff_matchup.items():
+#         game_loc = 'Phoenix, AZ'
+#         team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
+#         team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
+#         game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=championship, next_round = 'championship', current_round=current_round,
+#                     vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+#                     summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
+#         if prob_mapper[game.game_string][team1.team_name] ==0:
+#             game.vary_stats()
+#             game.simulate_game()
+#         else:
+#             game.short_game()
+#         # game.vary_stats()
+#         # game.simulate_game()
+#         game.game_summary()
+#     current_round = 'championship'
+#     print(f"\n\n starting {current_round}\n\n")
+#     for game,teams in championship.items():
+#         game_loc = 'Phoenix, AZ'
+#         team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
+#         team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
+#         game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=None, next_round = None, current_round=current_round,
+#                     vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+#                     summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
+#         game.vary_stats()
+#         game.simulate_game()
+#         game.game_summary()
+
+#         print(f"\n\n national champion is: {game.game_winner}!\n\n")
     
-    round_32 = {'East':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]},
-                'West':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]},
-                'Midwest':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]},
-                'South':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]
-                        }
-                }
-    good_regions = ['East','West','Midwest','South']
-    # good_regions = ['East']
-    for region in regions:
+#     print(f"starting new tournament\n\n")
+#     print(f"%complete: {(tidx/NUM_TOURNAMENTS)*100:0.2f}%")
+#     print(summary_tournament)
+#     t2 = time.time()
+#     print(f"tournament {tidx} complete in {t2-t1:0.2f} seconds")
+
+# summary_tournament = summary_tournament/NUM_TOURNAMENTS
+# print(summary_tournament)
+
+# summary_tournament.to_excel('2024_tournament_summary.xlsx')
+# print('complete!')
+
+round_32 = {'East':{'Game_1':[],
+                    'Game_2':[],
+                    'Game_3':[],
+                    'Game_4':[]},
+            'West':{'Game_1':[],
+                    'Game_2':[],
+                    'Game_3':[],
+                    'Game_4':[]},
+            'Midwest':{'Game_1':[],
+                    'Game_2':[],
+                    'Game_3':[],
+                    'Game_4':[]},
+            'South':{'Game_1':[],
+                    'Game_2':[],
+                    'Game_3':[],
+                    'Game_4':[]
+                    }
+            }
+
+for region in regions:
         if region not in good_regions:
             continue
         # if region !='East':
         #     continue
         current_round = 'round of 64'
+        print(f"\n\n starting {current_round}\n\n")
         for game in first_round:
             # fig, ax = plt.subplots()
             sdf = df[(df['Game'] == game) & (df['Region']==region)]
@@ -367,122 +600,19 @@ for tidx in range(1,NUM_TOURNAMENTS+1):
             team2 = team(team_name=sdf['Team'].values[1], team_seed=sdf['Seed'].values[1], region=region)
             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=game_id, game_round=round_32, next_round = 'round of 32',current_round = current_round,
                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-                        summary_stats=summary_tournament,tournament_sim=tidx)
-            game.vary_stats()
-            # ax.hist(game.team_data[team1.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team1.team_name)
-            # ax.hist(game.team_data[team2.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team2.team_name)
-            # ax.legend()
-            # ax.set_title(f"adjusted offensive efficiency for {team1.team_name} and {team2.team_name}")
-            game.simulate_game()
-            game.game_summary()
-            # round_32[game.next_game].append(game.game_winner)
-    # plt.show()
-    print(summary_tournament)
+                        summary_stats=summary_tournament,tournament_sim=1,probability_dict=prob_mapper)
             
-    round_16 = {'East':{'Game_1':[],
-                        'Game_2':[]},
-                'West':{'Game_1':[],
-                        'Game_2':[]},
-                'Midwest':{'Game_1':[],
-                        'Game_2':[]},
-                'South':{'Game_1':[],
-                        'Game_2':[]}
-    }
-
-    # print(round_32)
-    print(f"\n\n starting next round\n\n")
-    current_round = 'round of 32'
-    for region in good_regions:
-
-        for game, teams in round_32[region].items():
-            game_loc = tourney_locs[current_round][region][game]
-            team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-            team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-            game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=round_16, next_round= 'sweet 16',current_round = 'round of 32', 
-                        region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-                        summary_stats=summary_tournament,tournament_sim=tidx)
             game.vary_stats()
             game.simulate_game()
             game.game_summary()
 
-
-    round_8 = {'East':{'Game_1':[]},
-            'West':{'Game_1':[]},
-                'Midwest':{'Game_1':[]},
-                'South':{'Game_1':[]}
-    }
-    print(f"\n\n starting next round\n\n")
-    current_round = 'sweet 16'
-    for region in good_regions:
-
-        for game, teams in round_16[region].items():
-            game_loc = tourney_locs[current_round][region][game]
-            team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-            team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-            game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=round_8, next_round = 'Elite 8', current_round= current_round,
-                        region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-                        summary_stats=summary_tournament,tournament_sim=tidx)
-            game.vary_stats()
-            game.simulate_game()
-            game.game_summary()
-
-    final_four = {'East':None,
-                'West':None,
-                'Midwest':None,
-                'South':None}
-
-    current_round = 'Elite 8'
-    for region in good_regions:
-
-        for game, teams in round_8[region].items():
-            game_loc = tourney_locs[current_round][region][game]
-            team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-            team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-            game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=final_four, next_round = 'final four',current_round=current_round,
-                        region=None, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-                        summary_stats=summary_tournament,tournament_sim=tidx)
-            game.vary_stats()
-            game.simulate_game()
-            game.game_summary()
-
-    # print(final_four)
-    current_round = 'final four'
-    ff_matchup = {'Game_1':[final_four['East'],final_four['West']],
-                'Game_2':[final_four['Midwest'],final_four['South']]}
-
-    championship = {'Game_1':[]}
-
-    for game, teams in ff_matchup.items():
-        game_loc = 'Phoenix, AZ'
-        team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-        team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-        game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=championship, next_round = 'championship', current_round=current_round,
-                    vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-                    summary_stats=summary_tournament,tournament_sim=tidx)
-        game.vary_stats()
-        game.simulate_game()
-        game.game_summary()
-    current_round = 'championship'
-    for game,teams in championship.items():
-        game_loc = 'Phoenix, AZ'
-        team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-        team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-        game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=None, next_round = None, current_round=current_round,
-                    vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-                    summary_stats=summary_tournament,tournament_sim=tidx)
-        game.vary_stats()
-        game.simulate_game()
-        game.game_summary()
-
-        print(f"\n\n national champion is: {game.game_winner}!\n\n")
-    
-    print(f"starting new tournament\n\n")
-    print(f"%complete: {(tidx/NUM_TOURNAMENTS)*100:0.2f}%")
-
-summary_tournament = summary_tournament/NUM_TOURNAMENTS
-print(summary_tournament)
-
-summary_tournament.to_excel('2024_tournament_summary.xlsx')
-print('complete!')
-
-
+            # if prob_mapper[game.game_string][team1.team_name] ==0:
+            #     game.vary_stats()
+            # # ax.hist(game.team_data[team1.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team1.team_name)
+            # # ax.hist(game.team_data[team2.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team2.team_name)
+            # # ax.legend()
+            # # ax.set_title(f"adjusted offensive efficiency for {team1.team_name} and {team2.team_name}")
+            #     game.simulate_game()
+            # else: 
+            #     game.short_game()
+            # game.game_summary()
