@@ -66,7 +66,7 @@ NN_PARAMS = ['Distance_Traveled',
           'Pace','Total Turnovers','Fouls','FG_attempted','3PT_attempted',
           'Team_Possessions','Home','Away','adj_EM']
 
-NUM_GAMES = 500
+NUM_GAMES = 5000
 
 test_df = pd.read_excel(r'.\03_modelfitting\2023_2024_adjusted_data_EM.xlsx',index_col=0)
 
@@ -107,7 +107,8 @@ class team:
 
 class matchup:
     def __init__(self, team1, team2, game_location, num_games=50, game_id= None, game_round=None, next_round = None, current_round = None, region=None,
-                  vary_params = None, model_params=None, season_data=None, ridge_df=None, standardizer=None,summary_stats=None,tournament_sim = None,probability_dict=None):
+                  vary_params = None, model_params=None, season_data=None, ridge_df=None, standardizer=None,summary_stats=None,
+                  tournament_sim = None,probability_dict=None,line=None):
         self.team1 = team1
         self.team2 = team2
         self.game_location = game_location
@@ -135,6 +136,8 @@ class matchup:
         self.current_round = current_round
         self.summary_stats = summary_stats
         self.tournament_sim = tournament_sim
+        self.line = line
+        self.over = 0 
 
         self.game_string = f"{self.team1.team_name} vs {self.team2.team_name}"
         
@@ -214,6 +217,7 @@ class matchup:
     def simulate_game(self):
         team1_scores = np.array([])
         team2_scores = np.array([])
+        total_score = np.array([])
         for i in range(self.num_games):
             x1 = self.team_data[self.team1.team_name].iloc[i][self.model_params].values.reshape(1,-1)
             x2 = self.team_data[self.team2.team_name].iloc[i][self.model_params].values.reshape(1,-1)
@@ -229,17 +233,28 @@ class matchup:
             # print(f"game: {i+1}, {self.team1.team_name} score: {team1_score.detach().numpy()}, {self.team2.team_name} score: {team2_score.detach().numpy()}")
             team1_scores = np.append(team1_scores, team1_score.detach().numpy())
             team2_scores = np.append(team2_scores, team2_score.detach().numpy())
+            total_score = np.append(total_score, team1_score.detach().numpy()+team2_score.detach().numpy())
 
             if team1_score > team2_score:
                 self.team1_wins += 1
             else:
                 self.team2_wins += 1
+            
+            if self.line:
+                if team1_score.detach().numpy() + team2_score.detach().numpy() > self.line:
+                    self.over += 1
         
         self.team1_winprob = self.team1_wins/self.num_games
         self.team2_winprob = self.team2_wins/self.num_games
 
+        self.over_prob = self.over/self.num_games
+
         self.team1_score = team1_scores.mean()
+        self.team1_score_sd = team1_scores.std()
         self.team2_score = team2_scores.mean()
+        self.team2_score_sd = team2_scores.std()
+        
+                    
 
         prob_mapper[self.game_string][self.team1.team_name] = self.team1_winprob
         prob_mapper[self.game_string][f"{self.team1.team_name}_score"] = self.team1_score
@@ -275,7 +290,10 @@ class matchup:
         print(f"{self.game_winner} wins!")
         print(f"{self.team1.team_name} ({self.team1.team_seed}) vs {self.team2.team_name} ({self.team2.team_seed})\n"
               f"----------------------------------------------\n"
+            #   f"score: {self.team1_score:0.2f} ± {self.team1_score_sd:0.2f} vs {self.team2_score:0.2f} ± {self.team2_score_sd:0.2f}\n"
               f"score: {self.team1_score:0.2f} vs {self.team2_score:0.2f}\n"
+              f"total score: {self.team1_score+self.team2_score:0.2f}\n"
+              f"over prob: {self.over_prob:0.2f}\n"
               f"{self.team1.team_name} win prob: {self.team1_winprob:0.2f} vs {self.team2.team_name} win prob: {self.team2_winprob:0.2f}\n"
         )
         if self.upset:
@@ -584,35 +602,42 @@ round_32 = {'East':{'Game_1':[],
                     }
             }
 
-for region in regions:
-        if region not in good_regions:
-            continue
-        # if region !='East':
-        #     continue
-        current_round = 'round of 64'
-        print(f"\n\n starting {current_round}\n\n")
-        for game in first_round:
-            # fig, ax = plt.subplots()
-            sdf = df[(df['Game'] == game) & (df['Region']==region)]
-            game_loc = sdf['Location'].values[0]
-            game_id = sdf['Game'].values[0]
-            team1 = team(team_name=sdf['Team'].values[0], team_seed=sdf['Seed'].values[0], region=region)
-            team2 = team(team_name=sdf['Team'].values[1], team_seed=sdf['Seed'].values[1], region=region)
-            game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=game_id, game_round=round_32, next_round = 'round of 32',current_round = current_round,
-                        region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-                        summary_stats=summary_tournament,tournament_sim=1,probability_dict=prob_mapper)
-            
-            game.vary_stats()
-            game.simulate_game()
-            game.game_summary()
+# for region in regions:
+#         if region not in good_regions:
+#             continue
+#         # if region !='East':
+#         #     continue
+#         current_round = 'round of 64'
+#         # print(f"\n\n starting {current_round}\n\n")
+#         for game in first_round:
+#             # fig, ax = plt.subplots()
+#             sdf = df[(df['Game'] == game) & (df['Region']==region)]
+#             game_loc = sdf['Location'].values[0]
+#             game_id = sdf['Game'].values[0]
+#             team1 = team(team_name=sdf['Team'].values[0], team_seed=sdf['Seed'].values[0], region=region)
+#             team2 = team(team_name=sdf['Team'].values[1], team_seed=sdf['Seed'].values[1], region=region)
+#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=game_id, game_round=round_32, next_round = 'round of 32',current_round = current_round,
+#                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+#                         summary_stats=summary_tournament,tournament_sim=1,probability_dict=prob_mapper)
+#             teams = [team1, team2]
+#             if 'TCU Horned Frogs' in [team.team_name for team in teams]:
+#                 game.vary_stats()
+#                 game.simulate_game()
+#                 game.game_summary()
 
-            # if prob_mapper[game.game_string][team1.team_name] ==0:
-            #     game.vary_stats()
-            # # ax.hist(game.team_data[team1.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team1.team_name)
-            # # ax.hist(game.team_data[team2.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team2.team_name)
-            # # ax.legend()
-            # # ax.set_title(f"adjusted offensive efficiency for {team1.team_name} and {team2.team_name}")
-            #     game.simulate_game()
-            # else: 
-            #     game.short_game()
-            # game.game_summary()
+current_round = 'round of 32'
+# team1 = team(team_name='North Carolina Tar Heels', team_seed = 1, region='West')
+# team2 = team(team_name='Michigan State Spartans', team_seed = 9, region='West')
+# game_loc = 'Charlotte, NC'
+line = 172.5
+region = 'West'
+team1 = team(team_name='Alabama Crimson Tide', team_seed = 4, region=region)
+team2 = team(team_name='Grand Canyon Lopes', team_seed = 12, region=region)
+game_loc = tourney_locs[current_round][region]['Game_2']
+
+game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=1, game_round=round_32, next_round = 'round of 32',current_round = current_round,
+            region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
+            summary_stats=summary_tournament,tournament_sim=1,probability_dict=prob_mapper, line = line)
+game.vary_stats()
+game.simulate_game()
+game.game_summary()
