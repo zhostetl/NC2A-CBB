@@ -329,7 +329,7 @@ class Scraper:
                 
                 rows = tables[0].find_all('tr')
                 for idx, row in enumerate(rows):
-                    # if idx >6:
+                    # if idx >1:
                     #     continue
                     print(f"scraping game {idx+1}")
                     cells = row.find_all('td', class_='events__col Table__TD')

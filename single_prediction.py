@@ -37,10 +37,12 @@ class ModelStats():
         self.team_conf_id = self.db_session.query(TeamSeasonConference).filter(TeamSeasonConference.team_id == self.team_id).filter(TeamSeasonConference.season_id == self.season_year.id).first().conference_id
         self.conference = self.db_session.query(Conferences).filter(Conferences.id == self.team_conf_id).first().name
         self.team_stats = self.db_session.query(Games).filter(Games.season_id == self.season_year.id).filter(Games.team_id == self.team_id).all()
-
+        
         self.df = pd.DataFrame([{**game.__dict__} for game in self.team_stats])
+
         self.boxscore_params = ['total_turnovers', 'fouls', 'steals', 'blocks', 'rebounds', 'assists', 'two_point_field_goal_percentage',   'three_point_field_goal_percentage', 'free_throw_percentage','two_point_field_goals_made', 'three_point_field_goals_made',
-        'two_point_field_goals_attempted','three_point_field_goals_attempted','field_goals_made', 'field_goals_attemped', 'free_throws_made',  'free_throws_attempted', 'offensive_rebounds', 'defensive_rebounds','points']
+        'two_point_field_goals_attempted','three_point_field_goals_attempted','field_goals_made', 'field_goals_attemped', 'free_throws_made',  'free_throws_attempted', 'offensive_rebounds', 'defensive_rebounds','points',
+        'offensive_efficiency','defensive_efficiency','eFG','opp_eFG','TO_rate','opp_TO_rate','FT_rate','opp_FT_rate','OREB_per','DREB_per']
         # self.df = self.df.drop(columns=['_sa_instance_state'])
 
         self.sdf = self.df[self.boxscore_params]
@@ -85,11 +87,11 @@ class ModelMatchup():
 
         ### calculate the offensive and defensive efficiency ###
         
-        team1.varied_df['offensive_efficiency'] = team1.varied_df['points'] / team1.varied_df['possessions']
-        team2.varied_df['offensive_efficiency'] = team2.varied_df['points'] / team2.varied_df['possessions']
+        # team1.varied_df['offensive_efficiency'] = team1.varied_df['points'] / team1.varied_df['possessions']
+        # team2.varied_df['offensive_efficiency'] = team2.varied_df['points'] / team2.varied_df['possessions']
 
-        team1.varied_df['defensive_efficiency'] = team2.varied_df['points'] / team1.varied_df['possessions']
-        team2.varied_df['defensive_efficiency'] = team1.varied_df['points'] / team2.varied_df['possessions']
+        # team1.varied_df['defensive_efficiency'] = team2.varied_df['points'] / team1.varied_df['possessions']
+        # team2.varied_df['defensive_efficiency'] = team1.varied_df['points'] / team2.varied_df['possessions']
 
         team1.varied_df['eff_margin'] = team1.varied_df['offensive_efficiency'] - team2.varied_df['defensive_efficiency']
         team2.varied_df['eff_margin'] = team2.varied_df['offensive_efficiency'] - team1.varied_df['defensive_efficiency']
