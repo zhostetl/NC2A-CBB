@@ -1,0 +1,85 @@
+from sqlalchemy import create_engine, Column, Integer, Float, String, Sequence, Date, Time, DateTime, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship, declarative_base
+from datetime import datetime
+import pandas as pd
+import numpy as np 
+import os
+import glob
+import time 
+from datetime import date, timedelta
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from webscraping.web_scrapper import Scraper
+from webscraping.scrape_gamescores import Matchup
+from database.database import *
+
+engine = create_engine('sqlite:///database/ncaa_basketball.db')
+Base = declarative_base()
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# doi = date(2025, 1, 25)
+
+doi = date.today()
+
+dates = ['yesterday','total']
+summary_df = pd.DataFrame(columns = ['correct','total','accuracy','avg_margin_error'], index = dates)
+margin_error = {}
+for d in dates:
+
+    if d == 'yesterday':
+        doi = date.today() - timedelta(days=1)
+        model_predictions = session.query(Predictions).filter(Predictions.date == doi).all()
+    else:
+        doi = date.today()
+        model_predictions = session.query(Predictions).filter(Predictions.date < doi).all()
+    
+    # model_predictions = session.query(Predictions).all()
+
+    # print(f"number of predictions for {doi}: {len(model_predictions)}")
+
+    #get the games table data to compare the actual outcome: 
+    season_id = session.query(Season).filter(Season.year == doi.year).first()
+
+    win_count = 0 
+    margin_error[d] = np.array([])
+
+    for game in model_predictions: 
+        team_name = session.query(Teams).filter(Teams.id == game.team1_id).first()
+        opponent_name = session.query(Teams).filter(Teams.id == game.team2_id).first()
+
+        game_outcome = session.query(Games).filter(Games.season_id == season_id.id).filter(Games.team_id == game.team1_id).filter(Games.opponent_id == game.team2_id).filter(Games.date == game.date).first()
+
+        opponent_points = session.query(Games).filter(Games.season_id == season_id.id).filter(Games.team_id == game.team2_id).filter(Games.opponent_id == game.team1_id).filter(Games.date == game.date).first().points
+
+        win_team_name = session.query(Teams).filter(Teams.id == game.team1_id).first()
+
+        if game_outcome is None:
+            print(f"game not found in database")
+        else:
+            if game_outcome.win == 1:
+                
+                # print(f"{win_team_name.espn_name} won {game_outcome.points} to {opponent_points}")
+                win_count+=1
+                real_win_margin = game_outcome.points - opponent_points
+                predicted_win_margin = game.win_margin
+                margin_error[d] = np.append(margin_error[d], real_win_margin - predicted_win_margin)
+            else:
+                # print(f"**{win_team_name.espn_name} lost {game_outcome.points} to {opponent_points}**")
+                real_win_margin = opponent_points - game_outcome.points
+                predicted_win_margin = game.win_margin
+                margin_error[d] = np.append(margin_error[d], real_win_margin - predicted_win_margin)
+    
+    summary_df.loc[d] = [win_count, len(model_predictions), win_count/len(model_predictions)*100, np.mean(margin_error[d])]
+
+    # print(f"predicted {win_count} games correctly out of {len(model_predictions)}")
+    # print(f"Accuracy: {(win_count/len(model_predictions)*100):0.2f}%")
+    # print(f"Average margin error: {np.mean(margin_error):0.2f}")
+
+print(summary_df)
+sns.histplot(margin_error['total'], kde=True, bins=20)
+# plt.hist(margin_error, bins=20)
+plt.title('Histogram of margin error')
+plt.show()
