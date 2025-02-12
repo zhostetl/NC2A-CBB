@@ -67,8 +67,8 @@ game_queue = queue.Queue()
 
 webscraper = Scraper()
 
-start_date = date(2025, 2, 10)
-end_date = date(2025, 2, 10)
+start_date = date(2025, 2, 11)
+end_date = date(2025, 2, 11)
                 
 delta = end_date - start_date
 
