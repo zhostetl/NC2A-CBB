@@ -30,7 +30,7 @@ prediction_files = glob.glob(prediction_path + r'\*.csv')
 
 for file in prediction_files:
     prediction_date = os.path.basename(file).split('_')[0]
-    if prediction_date!= '2025-02-12':
+    if prediction_date!= '2025-02-17':
         continue
     p_date = datetime.strptime(prediction_date, '%Y-%m-%d')
 

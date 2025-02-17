@@ -74,7 +74,7 @@ sdf = df.groupby('espn_name')
 
 print(sdf['adj_efficiency_margin'].mean().sort_values(ascending=False))
 
-sdf['adj_efficiency_margin'].mean().sort_values(ascending=False).to_csv('adj_efficiency_margin.csv')
+# sdf['adj_efficiency_margin'].mean().sort_values(ascending=False).to_csv('adj_efficiency_margin.csv')
 
 t2 = time.time()
 print(f"Time elapsed: {t2-t1:0.2f} seconds")

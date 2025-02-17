@@ -46,14 +46,21 @@ for d in dates:
     win_count = 0 
     margin_error[d] = np.array([])
 
+    total_games = len(model_predictions)
+
     for game in model_predictions: 
+        
         team_name = session.query(Teams).filter(Teams.id == game.team1_id).first()
         opponent_name = session.query(Teams).filter(Teams.id == game.team2_id).first()
 
         game_outcome = session.query(Games).filter(Games.season_id == season_id.id).filter(Games.team_id == game.team1_id).filter(Games.opponent_id == game.team2_id).filter(Games.date == game.date).first()
 
-        opponent_points = session.query(Games).filter(Games.season_id == season_id.id).filter(Games.team_id == game.team2_id).filter(Games.opponent_id == game.team1_id).filter(Games.date == game.date).first().points
-
+        opponent_points = session.query(Games).filter(Games.season_id == season_id.id).filter(Games.team_id == game.team2_id).filter(Games.opponent_id == game.team1_id).filter(Games.date == game.date).first()
+        
+        if not opponent_points:
+            print(f"game on {game.date} for team id {game.team2_id} not found in database")
+            total_games-=1
+            continue
         win_team_name = session.query(Teams).filter(Teams.id == game.team1_id).first()
 
         if game_outcome is None:
@@ -63,16 +70,16 @@ for d in dates:
                 
                 # print(f"{win_team_name.espn_name} won {game_outcome.points} to {opponent_points}")
                 win_count+=1
-                real_win_margin = game_outcome.points - opponent_points
+                real_win_margin = game_outcome.points - opponent_points.points
                 predicted_win_margin = game.win_margin
                 margin_error[d] = np.append(margin_error[d], real_win_margin - predicted_win_margin)
             else:
                 # print(f"**{win_team_name.espn_name} lost {game_outcome.points} to {opponent_points}**")
-                real_win_margin = opponent_points - game_outcome.points
+                real_win_margin = opponent_points.points - game_outcome.points
                 predicted_win_margin = game.win_margin
                 margin_error[d] = np.append(margin_error[d], real_win_margin - predicted_win_margin)
     
-    summary_df.loc[d] = [win_count, len(model_predictions), win_count/len(model_predictions)*100, np.mean(margin_error[d])]
+    summary_df.loc[d] = [win_count, total_games, win_count/total_games*100, np.mean(margin_error[d])]
 
     # print(f"predicted {win_count} games correctly out of {len(model_predictions)}")
     # print(f"Accuracy: {(win_count/len(model_predictions)*100):0.2f}%")

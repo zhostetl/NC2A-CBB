@@ -22,12 +22,6 @@ session = Session()
 
 soi = '2025'
 
-# season_year = session.query(Season).filter(Season.year == soi).first()
-
-# season_data = session.query(Games).filter(Games.season_id == season_year.id).filter(Games.game_num==1).all()
-# print(len(season_data))
-#form dataframe for pd.get_dummies and ridge regression
-
 from sqlalchemy.orm import aliased
 
 def query_db(session, season):
@@ -182,16 +176,15 @@ def adjust_metrics(df, adjusted_vals_dict):
             opponent_value = adjusted_vals_dict[metric][f"opponent_name_{opponent}"]
             opponent_conf_value = adjusted_vals_dict[metric][f"opponent_conference_{opponent_conf}"]
             # adj = 'adjusted_' + metric
-            adjusted_dict[f"adj_{metric}"].append(raw_metric - home_adv - opponent_value - conference_adv - opponent_conf_value)
+            adjusted_dict[f"adj_{metric}"].append(raw_metric - home_adv - opponent_value - opponent_conf_value)
         # adjusted_dict['efficiency_margin'].append(adjusted_dict['adj_offensive_efficiency'] - adjusted_dict['adj_defensive_efficiency'])
         
     adjusted_df = pd.DataFrame.from_dict(adjusted_dict)
     adjusted_df['efficiency_margin'] = adjusted_df['adj_offensive_efficiency'] - adjusted_df['adj_defensive_efficiency']
-    print(adjusted_df.head())
     return adjusted_df
         
 
-
+#get the season data from the database in the games table
 season_data = query_db(session, soi)
 
 t2 = time.time()
@@ -208,19 +201,12 @@ adjusted_metrics = ['eFG','TO_rate','OREB_per','FT_rate',
                     'opp_eFG','opp_TO_rate','DREB_per','opp_FT_rate',
                     'offensive_efficiency','defensive_efficiency']
 
-# adjusted_metrics = ['offensive_efficiency','defensive_efficiency']
-
-# for adj_metric in adjusted_metrics:
-#     rm = RidgeMetrics(metric = adj_metric)
-#     session.add(rm)
-# session.commit()
 
 adjusted_dict = {}
-
+#perform the ridge regression for each metric and store the results in a dictionary to  update the values in the database
 for metric in adjusted_metrics:
        
     t5 = time.time()
-    # sdf = df[df['game_num'] <= 3]
     
     adjusted_dict[metric], adjusted_vals = ridge_regression(df, f'{metric}', normalize_data=True)
 
@@ -252,7 +238,7 @@ for metric in adjusted_metrics:
         # print(f"{key}: {val:0.5f}")
 
 
-
+#now go and calculate the adjusted values for the games so far
 ridge_adjusted = adjust_metrics(df, adjusted_dict)
 
 
@@ -263,8 +249,8 @@ print(f"\n********************\nAdding adjusted metrics to database\n***********
 
 for idx, row in df.iterrows():
     game_id = row['game_id']
-    if (game_id,) in adjusted_game_ids:
-        continue
+    # if (game_id,) in adjusted_game_ids:
+    #     continue
         # print(f"Game {game_id} already has adjusted metrics")
     team_id = row['team_id']
     # print(idx, game_id)
@@ -282,13 +268,31 @@ for idx, row in df.iterrows():
     adj_defensive_efficiency = ridge_adjusted.loc[idx, 'adj_defensive_efficiency']
     adj_efficiency_margin = ridge_adjusted.loc[idx, 'efficiency_margin']
 
-    adjusted_game = AdjustedMetrics(game_id = game_id, team_id = team_id,
-                                     adj_efg_percentage = adj_efg_percentage, adj_turnover_percentage = adj_turnover_percentage,
-                                     adj_offensive_rebound_percentage = adj_offensive_rebound_percentage, adj_free_throw_rate = adj_free_throw_rate,
-                                     opp_adj_efg_percentage = opp_adj_efg_percentage, opp_adj_turnover_percentage = opp_adj_turnover_percentage,
-                                     adj_def_rebound_percentage = adj_def_rebound_percentage, opp_adj_free_throw_rate = opp_adj_free_throw_rate,
-                                     adj_offensive_efficiency = adj_offensive_efficiency, adj_defensive_efficiency = adj_defensive_efficiency, adj_efficiency_margin = adj_efficiency_margin)
-    session.add(adjusted_game)
+    #check if the game id exists, if it does then update the values else add a new row to the database
+    adjusted_game = session.query(AdjustedMetrics).filter(AdjustedMetrics.game_id == game_id, AdjustedMetrics.team_id == team_id).first()
+    if adjusted_game:
+        adjusted_game.adj_efg_percentage = adj_efg_percentage
+        adjusted_game.adj_turnover_percentage = adj_turnover_percentage
+        adjusted_game.adj_offensive_rebound_percentage = adj_offensive_rebound_percentage
+        adjusted_game.adj_free_throw_rate = adj_free_throw_rate
+        adjusted_game.opp_adj_efg_percentage = opp_adj_efg_percentage
+        adjusted_game.opp_adj_turnover_percentage = opp_adj_turnover_percentage
+        adjusted_game.adj_def_rebound_percentage = adj_def_rebound_percentage
+        adjusted_game.opp_adj_free_throw_rate = opp_adj_free_throw_rate
+        adjusted_game.adj_offensive_efficiency = adj_offensive_efficiency
+        adjusted_game.adj_defensive_efficiency = adj_defensive_efficiency
+        adjusted_game.adj_efficiency_margin = adj_efficiency_margin
+        # session.commit()
+   
+    else:
+
+        adjusted_game = AdjustedMetrics(game_id = game_id, team_id = team_id,
+                                        adj_efg_percentage = adj_efg_percentage, adj_turnover_percentage = adj_turnover_percentage,
+                                        adj_offensive_rebound_percentage = adj_offensive_rebound_percentage, adj_free_throw_rate = adj_free_throw_rate,
+                                        opp_adj_efg_percentage = opp_adj_efg_percentage, opp_adj_turnover_percentage = opp_adj_turnover_percentage,
+                                        adj_def_rebound_percentage = adj_def_rebound_percentage, opp_adj_free_throw_rate = opp_adj_free_throw_rate,
+                                        adj_offensive_efficiency = adj_offensive_efficiency, adj_defensive_efficiency = adj_defensive_efficiency, adj_efficiency_margin = adj_efficiency_margin)
+        session.add(adjusted_game)
 
 session.commit()
 
