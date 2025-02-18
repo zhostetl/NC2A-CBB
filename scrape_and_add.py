@@ -67,8 +67,8 @@ game_queue = queue.Queue()
 
 webscraper = Scraper()
 
-start_date = date(2025, 2, 16)
-end_date = date(2025, 2, 16)
+start_date = date(2025, 2, 17)
+end_date = date(2025, 2, 17)
                 
 delta = end_date - start_date
 
@@ -109,7 +109,7 @@ with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
     futures = [executor.submit(threaded_scrape_v2, game_queue, scraped_games) for _ in range(MAX_WORKERS)]
 
 print(f"Scraped {len(scraped_games)} games")
-print(f'******---------------********\nAdding {len(scraped_games)}to the database\n*********---------------********')
+print(f'******---------------********\nAdding {len(scraped_games)} games to the database\n*********---------------********')
 
 for game in scraped_games:
     try:
@@ -120,3 +120,5 @@ for game in scraped_games:
     except Exception as e:
         print(f"Error adding {game}: {e}")
         traceback.print_exc()
+
+print(f'******---------------********\nAdded {len(scraped_games)} games to the database\n*********---------------********')
