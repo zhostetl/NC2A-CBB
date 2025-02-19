@@ -49,19 +49,25 @@ for idx, row in ws.future_df.iterrows():
     
     game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = predict_game(team1 = team1.espn_name, team2 = team2.espn_name, game_location=game_location.location, db_session=session, num_games=NUM_GAMES, season=2025, over_under=vegas_over_under)
 
-    # this is currently not inputting correctly to the database
-    # model_prediction = Predictions(date = todays_date, team1_id = team1.id, team2_id = team2.id, team1_pts = win_pts, team2_pts = loser_pts, win_pct = win_pct, win_margin = win_margin, total_pts = total_pts,winner = team1.id)
-    # session.add(model_prediction)
-    # session.commit()
+    if game_winner == team1.espn_name:
+        gw = team1.id
+        lw = team2.id
+    else:
+        gw = team2.id
+        lw = team1.id
+    # this assumes that team1 id is the winner
+    model_prediction = Predictions(date = todays_date, team1_id = gw, team2_id = lw, team1_pts = win_pts, team2_pts = loser_pts, win_pct = win_pct, win_margin = win_margin, total_pts = total_pts,winner = gw)
+    session.add(model_prediction)
+    session.commit()
 
-    game_dict['winning_team'].append(game_winner)
-    game_dict['winning_team_pts'].append(win_pts)
-    game_dict['win_pct'].append(win_pct)
-    game_dict['losing_team'].append(game_loser)
-    game_dict['losing_team_pts'].append(loser_pts)
-    game_dict['over_perc'].append(over_under)
-    game_dict['win_margin'].append(win_margin)
-    game_dict['total_pts'].append(total_pts)
+    # game_dict['winning_team'].append(game_winner)
+    # game_dict['winning_team_pts'].append(win_pts)
+    # game_dict['win_pct'].append(win_pct)
+    # game_dict['losing_team'].append(game_loser)
+    # game_dict['losing_team_pts'].append(loser_pts)
+    # game_dict['over_perc'].append(over_under)
+    # game_dict['win_margin'].append(win_margin)
+    # game_dict['total_pts'].append(total_pts)
 
 game_df = pd.DataFrame(game_dict)
 

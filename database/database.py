@@ -191,6 +191,15 @@ class Predictions(Base):
     win_margin = Column(Float(5), nullable=False)
     total_pts = Column(Float(5), nullable=False)
 
+class ModelPerformance(Base):
+    __tablename__ = 'model_performance'
+    id = Column(Integer, primary_key=True)
+    date = Column(Date, nullable=False)
+    correct = Column(Integer, nullable=False)
+    total = Column(Integer, nullable=False)
+    accuracy = Column(Float(5), nullable=False)
+    error = Column(Float(5), nullable=False)
+
 if __name__ == '__main__':
     # Create tables
     Base.metadata.create_all(engine)
