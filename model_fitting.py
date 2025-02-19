@@ -8,108 +8,75 @@ import torch.nn as nn
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import joblib
+import pickle
 
 
-files = [r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2022_2023_adjusted_data_EM.xlsx',
-         r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2023_2024_adjusted_data_EM.xlsx']
+from database.database import *
+from models.NN_model import *
+import time
 
-df = pd.concat([pd.read_excel(f,index_col=0) for f in files])
+# get the data extracted from the database... will need the Games table and the AdjustedMetrics table
+t1 = time.time()
 
-# df = pd.read_excel(r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2022_2023_adjusted_data.xlsx',index_col=0)
-# new_season = pd.read_excel(r'C:\Users\zhostetl\Documents\11_CBB\99_git\NC2A-CBB\03_modelfitting\2023_2024_adjusted_data.xlsx',index_col=0)
-# print(df.head())
+engine = create_engine('sqlite:///database/ncaa_basketball.db')
+Base = declarative_base()
+Session = sessionmaker(bind=engine)
+session = Session()
 
-# Check if there are any NaN values in the 
-nan_indices = df[df['Distance_Traveled'].isna()].index
+compiled_df = pd.DataFrame()
 
-# print(df.loc[nan_indices, ['Team','Opponent','Distance_Traveled']])
-df = df.drop(nan_indices)
+seasons = [2015, 2016, 2017]
+NUM_EPOCHS = 10000
+LEARNING_RATE = 0.05
+# seasons = [2015, 2016]
+for season in seasons: 
 
-params = ['Distance_Traveled',
-          'adj_Raw_Off_Eff','adj_off_eFG','adj_off_TOV','adj_off_ORB','adj_off_FTR',
-          'adj_Raw_Def_Eff','adj_def_eFG','adj_def_TOV','adj_def_ORB','adj_def_FTR',
-          'Pace','Total Turnovers','Fouls','FG_attempted','3PT_attempted',
-          'Team_Possessions','Home','Away','adj_EM']
-# params = ['Distance_Traveled','adj_Raw_Off_Eff','adj_Raw_Def_Eff']
-y = ['Team_score']
+
+    # season_year = session.query(Season).filter(Season.year == season).first()
+    season_id = session.query(Season).filter(Season.year == season).first()
+    # Join the Games table with the AdjustedMetrics table and filter by season_id
+    # season_data = session.query(Games, AdjustedMetrics).join(AdjustedMetrics, Games.game_id == AdjustedMetrics.game_id).all()
+    season_data = session.query(Games, AdjustedMetrics).join(AdjustedMetrics, (Games.game_id == AdjustedMetrics.game_id) & (Games.team_id == AdjustedMetrics.team_id)).filter(Games.season_id == season_id.id).all()
+    # print(season_data)
+    # Convert the query results to a DataFrame
+
+    df = pd.DataFrame([{**game.__dict__, **metrics.__dict__} for game, metrics in season_data])
+    df = df.drop(columns=['_sa_instance_state'])
+    
+    #check for NaN values
+    for col in df.columns: 
+        if df[col].isna().sum() > 0:
+            print(f"Column {col} has {df[col].isna().sum()} NaN values")
+
+    compiled_df = pd.concat([compiled_df, df])
+
+
+
+#these are the parameters that we want to train the model with 
+params = ['distance_traveled',
+          'adj_offensive_efficiency', 'adj_defensive_efficiency', 'adj_efficiency_margin',
+          'adj_efg_percentage','adj_turnover_percentage','adj_offensive_rebound_percentage','adj_free_throw_rate',
+          'opp_adj_efg_percentage','opp_adj_turnover_percentage','adj_def_rebound_percentage','opp_adj_free_throw_rate',
+          'pace','total_turnovers','fouls', 'steals','blocks','rebounds','assists',
+          'two_point_field_goal_percentage','three_point_field_goal_percentage', 'free_throw_percentage',
+          'possessions','home','away']
+
+y = ['points']
 # Prepare the data
-X = df[params].values
-y = df[y].values
-scaler = StandardScaler()
-X = scaler.fit_transform(X)
-joblib.dump(scaler, r'03_modelfitting\scaler_EM.pkl')
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X = compiled_df[params].values
+y = compiled_df[y].values
 
-print(f"X_train shape: {X_train.shape}, X_test shape: {X_test.shape}, y_train shape: {y_train.shape}, y_test shape: {y_test.shape}")
-# add_layers = 40
-add_layers = 60
-#build the model
-ANNreg = nn.Sequential(
-    nn.Linear(X.shape[1], add_layers),
-    # nn.ReLU(),
-    nn.Sigmoid(),
-    nn.Linear(add_layers, add_layers),
-    # nn.ReLU(),
-    nn.Sigmoid(),
-    nn.Linear(add_layers, add_layers),
-    nn.Sigmoid(),
-    nn.Linear(add_layers, 1)
-)
-# print(ANNreg)
-learning_rate = 0.005
 
-# Loss and optimizer
-criterion = nn.MSELoss()
-optimizer = torch.optim.SGD(ANNreg.parameters(), lr=learning_rate)
+# call the NN model from the modeling module 
 
-# Train the model
-num_epochs = 7000
-# num_epochs = 50000
-losses = torch.zeros(num_epochs)
+nn_model = NN_Model()
 
-# y = scaler.fit_transform(y)
-# Convert X and y to Tensors
-X_train = torch.from_numpy(X_train.astype(np.float32))
-X_test = torch.from_numpy(X_test.astype(np.float32))
-y_train = torch.from_numpy(y_train.astype(np.float32))
-y_test = torch.from_numpy(y_test.astype(np.float32))
+nn_model.build_model(input_features=params)
 
-for epoch in range(num_epochs):
+nn_model.train_model(num_epochs = NUM_EPOCHS, learning_rate = LEARNING_RATE, criterion = nn.MSELoss(),
+                    X = X, y = y, test_size = 0.2, random_state = 42)
 
-    # Forward pass
-    y_hat= ANNreg(X_train)
-    loss = criterion(y_hat, y_train)
-    losses[epoch] = loss
-    # Backward and optimize
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-    if epoch % 100 == 0:
-        print (f'Epoch [{epoch}/{num_epochs}], Loss: {loss.item():.4f}')
 
-#final forward pass
-predictions = ANNreg(X_test)
-# print(predictions.detach().numpy())
-# print(X_test)
-#final loss 
-# testloss = (predictions - y_test).pow(2).mean()
-testloss = criterion(predictions, y_test)
-print(f"final loss: {testloss:0.2f}")
-
-torch.save(ANNreg.state_dict(), r'03_modelfitting\ANNreg_EM_train.pth')
-#rescale the predictions
-# predictions = scaler.inverse_transform(predictions.detach().numpy())
-# y = scaler.inverse_transform(y.detach().numpy())
-
-# plt.plot(losses.detach().numpy())
-# plt.plot(num_epochs, testloss.detach(), 'ro')
-# plt.title(f"Final Loss: {testloss:0.2f}")
-
-# plt.figure()
-# plt.plot(predictions.detach().numpy(), y_test, 'ro')
-# plt.plot([0, 100], [0, 100], 'k-')
-# plt.title('Predictions vs. Actual')
-
-# plt.show()
+nn_model.save_model(session, name = f'NN_model_trained with {seasons[0]}-{seasons[-1]}', description = f'This model was trained with data from the {seasons[0]}-{seasons[-1]} seasons for {NUM_EPOCHS} epochs with a learning rate of {LEARNING_RATE}')
 
 
