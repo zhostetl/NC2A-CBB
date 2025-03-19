@@ -329,16 +329,19 @@ class Tournament():
                         game_string = f"{team1.team_name} vs {team2.team_name}"
                         #check if the win probability has already been calculated
                         if game_string in self.probability_dict:
-                            print(self.probability_dict[game_string])
-                            # print(f"already simulated {game_string}. let me check the probability")
-                            # print(f"{team1.team_name} has a {self.probability_dict[game_string][team1.team_name]} win chance")
                             random_number = random.random()
-                            if random_number < self.probability_dict[game_string][team1.team_name]:
-                                game_winner = team1
+                            if team1.team_name in self.probability_dict[game_string]:
+                                if random_number < self.probability_dict[game_string][team1.team_name]:
+                                    advancing_team = team1
+                                else:
+                                    advancing_team = team2
                             else:
-                                game_winner = team2
+                                if random_number < self.probability_dict[game_string][team2.team_name]:
+                                    advancing_team = team2
+                                else:
+                                    advancing_team = team1
                         else:
-                            self.probability_dict[game_string] = {team1.team_name:0, team2.team_name:0}
+                            self.probability_dict[game_string] = {}
                             game_location = game_loc.lstrip()
                             game_location+=' '
                             gloc = game_location
@@ -348,35 +351,33 @@ class Tournament():
                             else:    
                                 game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts= self.game_prediction(game_location.location,'season_stats', team1, team2)
                             
-                            print(f"{game_winner} beats {game_loser} {win_pts:0.2f} to {loser_pts:0.2f} with a win probability of {win_pct:0.2f}")
+                            # print(f"{game_winner} beats {game_loser} {win_pts:0.2f} to {loser_pts:0.2f} with a win probability of {win_pct:0.2f}")
                             #store the probabilities for later
                             if game_winner == team1.team_name:
-                                gw = team1 
-                                gl = team2 
+                                self.probability_dict[game_string][team1.team_name]=win_pct
+                                
                             else:
-                                gw = team2
-                                gl = team1
+                                self.probability_dict[game_string][team2.team_name]=win_pct
 
-                            self.probability_dict[game_string][gw.team_name] = win_pct
-                            self.probability_dict[game_string][gl.team_name] = 1 - win_pct
-                            print(self.probability_dict[game_string])
+                            
                             random_number = random.random()
+                            # print(f"random number: {random_number:0.2f}, win probability: {self.probability_dict[game_string]}")
                             if game_winner == team1.team_name:
                                 if random_number < win_pct:
-                                    game_winner = team1
+                                    advancing_team = team1
                                 else:
-                                    game_winner = team2
+                                    advancing_team = team2
                             else:
                                 if random_number < win_pct:
-                                    game_winner = team2
+                                    advancing_team = team2
                                 else:
-                                    game_winner = team1
+                                    advancing_team = team1
 
                         for game, teams in self.game_mapper.items():
                             if game_id in teams:
                                 
-                                self.mapping[next_round][region][game].append(game_winner)
-                                self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                                self.mapping[next_round][region][game].append(advancing_team)
+                                self.summary_stats.loc[advancing_team.team_name, rounds]+=1
                                 break
             
             elif rounds == 'Final Four':
@@ -389,14 +390,21 @@ class Tournament():
                     game_location+=' '
                     gloc = game_location
                     game_string = f"{team1.team_name} vs {team2.team_name}"
+                    print(f"final four matchup {game_string}")
                     if game_string in self.probability_dict:
                         random_number = random.random()
-                        if random_number < self.probability_dict[game_string][team1.team_name]:
-                            game_winner = team1
+                        if team1.team_name in self.probability_dict[game_string]:
+                            if random_number < self.probability_dict[game_string][team1.team_name]:
+                                advancing_team = team1
+                            else:
+                                advancing_team = team2
                         else:
-                            game_winner = team2
+                            if random_number < self.probability_dict[game_string][team2.team_name]:
+                                advancing_team = team2
+                            else:
+                                advancing_team = team1
                     else:
-                        self.probability_dict[game_string] = {team1.team_name:0, team2.team_name:0}
+                        self.probability_dict[game_string] = {}
                         game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_location}%')).first()
                     
                         if game_location is None:
@@ -405,25 +413,30 @@ class Tournament():
                             game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts= self.game_prediction(game_location.location,'season_stats', team1, team2)
                         
                         # print(f"{game_winner} beats {game_loser} {win_pts:0.2f} to {loser_pts:0.2f} with a win probability of {win_pct:0.2f}")
-                        if game_winner == team1.team_name:
-                            gw = team1
-                            gl = team2
-                        else:
-                            gw = team2
-                            gl = team1
-                        self.probability_dict[game_string][gw.team_name] = win_pct
-                        self.probability_dict[game_string][gl.team_name] = 1 - win_pct
+                            if game_winner == team1.team_name:
+                                self.probability_dict[game_string][team1.team_name]=win_pct
+                                
+                            else:
+                                self.probability_dict[game_string][team2.team_name]=win_pct
 
-                        random_number = random.random()
-                        if random_number < win_pct:
-                            game_winner = team1
-                        else:
-                            game_winner = team2
+                            random_number = random.random()
+                            if game_winner == team1.team_name:
+                                if random_number < win_pct:
+                                    advancing_team = team1
+                                else:
+                                    advancing_team = team2
+                            else:
+                                if random_number < win_pct:
+                                    advancing_team = team2
+                                else:
+                                    advancing_team = team1
 
                     for game, teams in self.game_mapper.items():
                         if game_id in teams:
-                            self.mapping['Championship'][game].append(game_winner)
-                            self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                            print(f"game id: {game_id}")
+                            print(f"advancing team: {advancing_team.team_name}")
+                            self.mapping['Championship'][game].append(advancing_team)
+                            self.summary_stats.loc[advancing_team.team_name, rounds]+=1
                             break
             elif rounds == 'Championship':
                 team1 = self.mapping[rounds]['Game_1'][0]
@@ -432,6 +445,7 @@ class Tournament():
                 game_location+=' '
                 gloc = game_location
                 game_string = f"{team1.team_name} vs {team2.team_name}"
+                print(f"championship matchup {game_string}")
                 if game_string in self.probability_dict:
                     random_number = random.random()
                     if random_number < self.probability_dict[game_string][team1.team_name]:
@@ -478,12 +492,18 @@ class Tournament():
                         game_string = f"{team1.team_name} vs {team2.team_name}"
                         if game_string in self.probability_dict:
                             random_number = random.random()
-                            if random_number < self.probability_dict[game_string][team1.team_name]:
-                                game_winner = team1
+                            if team1.team_name in self.probability_dict[game_string]:
+                                if random_number < self.probability_dict[game_string][team1.team_name]:
+                                    advancing_team = team1
+                                else:
+                                    advancing_team = team2
                             else:
-                                game_winner = team2
+                                if random_number < self.probability_dict[game_string][team2.team_name]:
+                                    advancing_team = team2
+                                else:
+                                    advancing_team = team1
                         else:
-                            self.probability_dict[game_string] = {team1.team_name:0, team2.team_name:0}
+                            self.probability_dict[game_string] = {}
                             game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_location}%')).first()
 
                             team1 = team(team_name=team1.team_name, team_seed=team1.team_seed, region=team1.region)
@@ -497,29 +517,32 @@ class Tournament():
                             # print(f"{game_winner} beats {game_loser} {win_pts:0.2f} to {loser_pts:0.2f} with a win probability of {win_pct:0.2f}")
 
                             if game_winner == team1.team_name:
-                                gw = team1
-                                gl = team2
+                                self.probability_dict[game_string][team1.team_name]=win_pct
+                                
                             else:
-                                gw = team2
-                                gl = team1
+                                self.probability_dict[game_string][team2.team_name]=win_pct
 
-                            self.probability_dict[game_string][gw.team_name] = win_pct
-                            self.probability_dict[game_string][gl.team_name] = 1 - win_pct
-                            
                             random_number = random.random()
-                            if random_number < win_pct:
-                                game_winner = team1
+                            if game_winner == team1.team_name:
+                                if random_number < win_pct:
+                                    advancing_team = team1
+                                else:
+                                    advancing_team = team2
                             else:
-                                game_winner = team2
+                                if random_number < win_pct:
+                                    advancing_team = team2
+                                else:
+                                    advancing_team = team1
+                        
                         for game, teams in self.game_mapper.items():
                             if game_id in teams:
                                 if next_round == 'Final Four':
-                                    self.mapping[next_round][game_winner.region] = game_winner
+                                    self.mapping[next_round][advancing_team.region] = advancing_team
                                 elif next_round == 'Championship':
-                                    self.mapping[next_round]['Game_1'].append(game_winner)
+                                    self.mapping[next_round]['Game_1'].append(advancing_team)
                                 else:
-                                    self.mapping[next_round][region][game].append(game_winner)
-                                self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                                    self.mapping[next_round][region][game].append(advancing_team)
+                                self.summary_stats.loc[advancing_team.team_name, rounds]+=1
                                 break
 
 
@@ -586,7 +609,7 @@ ncaa_tournament = Tournament(seed_df = df, teams=all_teams, summary_stats=summar
 
 
 good_regions = ['East','West','Midwest','South']
-NUM_TOURNAMENTS = 100
+NUM_TOURNAMENTS = 5
 
 for i in range(NUM_TOURNAMENTS):
     counter = i + 1
@@ -598,8 +621,8 @@ ncaa_tournament.summary_stats = ncaa_tournament.summary_stats/NUM_TOURNAMENTS
 t2 = time.time()
 
 print(f"Time taken to simulate tournament: {t2-t1:0.2f} seconds")
-print(f"Summary of tournament: \n{ncaa_tournament.summary_stats}")
+# print(f"Summary of tournament: \n{ncaa_tournament.summary_stats}")
 
-print(ncaa_tournament.summary_stats['Championship'].sort_values(ascending=False).head(10))
+print(ncaa_tournament.summary_stats['Elite 8'].sort_values(ascending=False).head(10))
 # for tidx in range(1,NUM_TOURNAMENTS+1):
 #     t1 = time.time()
