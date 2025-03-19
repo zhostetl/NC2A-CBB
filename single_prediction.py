@@ -187,7 +187,6 @@ class ModelMatchup():
 
     def generate_samples(self, team_of_interest = None, opponent = None):
         if self.prediction_method == 'season_stats':
-            
             df = team_of_interest.df[team_of_interest.boxscore_params]
             team_of_interest.means = df.mean()
             team_of_interest.stds = df.std()
@@ -374,7 +373,7 @@ class ModelMatchup():
             team2.away = False
             team2.neutral = False
         else:
-            print(f"Game is played at a neutral site")
+            # print(f"Game is played at a neutral site")
             team1.varied_df['home'] = 0
             team2.varied_df['home'] = 0
             team1.varied_df['away'] = 0
@@ -439,7 +438,7 @@ class ModelMatchup():
         # return self.winner, self.win_percentage, self.winner_pts, self.loser, self.loser_pts, self.ou_pct, self.win_margin
 
 
-def predict_game(team1 = None, team2 = None, num_games = 1000, season = None, game_location = None, db_session = None, over_under = None):
+def predict_game(team1 = None, team2 = None, num_games = 1000, season = None, game_location = None, db_session = None, over_under = None, method = 'nearest_neighbor'):
 
     
     nn_model = NN_Model()
@@ -449,7 +448,7 @@ def predict_game(team1 = None, team2 = None, num_games = 1000, season = None, ga
     team1 = ModelStats(team_name=team1, home_team=False, season=season, db_session=db_session)
     team2 = ModelStats(team_name=team2, home_team=True, season=season, db_session=db_session)
     
-    matchup = ModelMatchup(team1=team1, team2=team2, num_games=num_games, season=season, game_location=game_location, db_session=db_session, ml_model=nn_model)
+    matchup = ModelMatchup(team1=team1, team2=team2, num_games=num_games, season=season, game_location=game_location, db_session=db_session, ml_model=nn_model, prediction_method=method)
 
     matchup.calculate_metrics(team1, team2)
     matchup.check_distances(team1, team2)

@@ -208,6 +208,321 @@ class matchup:
             else:
                 self.upset = False
 
+class Tournament():
+    def __init__(self, seed_df, teams, summary_stats, num_games, num_tournaments):
+        self.seed_df = seed_df
+        self.teams = teams
+        self.summary_stats = summary_stats
+        self.num_games = num_games
+        self.num_tournaments = num_tournaments
+        self.probability_dict = {}
+        self.regions = ['East','West','Midwest','South']
+        self.first_round = [1,2,3,4,5,6,7,8]
+        self.game_mapper = {'Game_1':[1,2],
+                            'Game_2':[3,4],
+                            'Game_3':[5,6],
+                            'Game_4':[7,8],}
+        self.game_rounds = ['round of 64','round of 32','Sweet 16','Elite 8','Final Four','Championship']
+        self.tourney_locs = {'round of 32':{'East':{'Game_1':'Raleigh, NC',
+                                       'Game_2':'Seattle, WA',
+                                       'Game_3':'Denver, CO',
+                                        'Game_4':'Cleveland, OH'
+                                        },
+                               'West':{'Game_1':'Raleigh, NC',
+                                        'Game_2':'Seattle, WA',
+                                        'Game_3':'Wichita, KS',
+                                        'Game_4':'Providence, RI'
+                                        },
+                                'Midwest':{'Game_1':'Wichita, KS',
+                                        'Game_2':'Providence, RI',
+                                        'Game_3':'Milwaukee, WI',
+                                        'Game_4':'Lexington, KY'
+                                        },
+                                'South':{'Game_1':'Lexington, KY',
+                                        'Game_2':'Denver, CO',
+                                        'Game_3':'Milwaukee, WI',
+                                        'Game_4':'Cleveland, OH'
+                                        }
+                                 },
+                'Sweet 16':{'East':{'Game_1':'Newark, NJ',
+                                    'Game_2':'Newark, NJ',
+                                        },
+                            'West':{'Game_1':'San Francisco, CA',
+                                    'Game_2':'San Francisco, CA',
+                                    },
+                            'Midwest':{'Game_1':'Indianapolis, IN',
+                                       'Game_2':'Indianapolis, IN',
+                                    },
+                            'South':{'Game_1':'Atlanta, GA',
+                                     'Game_2':'Atlanta, GA',
+                                    }
+                            },
+                'Elite 8':{'East':{'Game_1':'Newark, NJ'},
+                            'West':{'Game_1':'San Francisco, CA'},
+                            'Midwest':{'Game_1':'Indianapolis, IN'},
+                            'South':{'Game_1':'Atlanta, GA'}
+                            },
+                'Final Four':{'Game_1':'San Antonio, TX',
+                              'Game_2':'San Antonio, TX'
+                            },
+                'Championship':{'Game_1':'San Antonio, TX'}
+                               }
+        self.mapping = {'round of 32': {'East':{'Game_1':[],
+                                             'Game_2':[],
+                                             'Game_3':[],
+                                             'Game_4':[]},
+                                     'West':{'Game_1':[],
+                                             'Game_2':[],
+                                             'Game_3':[],
+                                             'Game_4':[]},
+                                     'Midwest':{'Game_1':[],
+                                             'Game_2':[],
+                                             'Game_3':[],
+                                             'Game_4':[]},
+                                     'South':{'Game_1':[],
+                                             'Game_2':[],
+                                             'Game_3':[],
+                                             'Game_4':[]
+                                             }
+                                             },
+                        'Sweet 16':{'East':{'Game_1':[],
+                                            'Game_2':[]},
+                                    'West':{'Game_1':[],
+                                            'Game_2':[]},
+                                    'Midwest':{'Game_1':[],
+                                            'Game_2':[]},
+                                    'South':{'Game_1':[],
+                                            'Game_2':[]
+                                            }
+                                    },
+                        'Elite 8':{'East':{'Game_1':[]},
+                                    'West':{'Game_1':[]},
+                                    'Midwest':{'Game_1':[]},
+                                    'South':{'Game_1':[]}
+                                    },
+                        'Final Four':{'East':None,
+                                      'West':None,
+                                      'Midwest':None,
+                                       'South':None
+                                        },
+                        'Championship':{'Game_1':[]}
+                }
+    
+    def game_prediction(self, game_loc, prediction_method, team1, team2):
+
+        game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = predict_game(team1 = team1.team_name, team2 = team2.team_name, game_location = game_loc, db_session = session, num_games = NUM_GAMES, season = 2025, over_under = None,method = prediction_method)
+
+        return game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts
+    
+    def simulate_tournament(self, tourney_num):
+        for rounds in self.game_rounds:
+            print(f"\nStarting {rounds} of tournament {tourney_num}\n")
+            if rounds == 'round of 64':
+                next_round = 'round of 32'
+                for region in self.regions:
+                    for game in self.first_round:
+                        sdf = self.seed_df[(df['Game'] == game) & (df['Region']==region)]
+                        game_loc = sdf['Location'].values[0].lstrip()
+                        game_id = sdf['Game'].values[0]
+                        team1 = team(team_name=sdf['Team'].values[0], team_seed=sdf['Seed'].values[0], region=sdf['Region'].values[0])
+                        team2 = team(team_name=sdf['Team'].values[1], team_seed=sdf['Seed'].values[1], region=sdf['Region'].values[1])
+                        game_string = f"{team1.team_name} vs {team2.team_name}"
+                        #check if the win probability has already been calculated
+                        if game_string in self.probability_dict:
+                            print(self.probability_dict[game_string])
+                            # print(f"already simulated {game_string}. let me check the probability")
+                            # print(f"{team1.team_name} has a {self.probability_dict[game_string][team1.team_name]} win chance")
+                            random_number = random.random()
+                            if random_number < self.probability_dict[game_string][team1.team_name]:
+                                game_winner = team1
+                            else:
+                                game_winner = team2
+                        else:
+                            self.probability_dict[game_string] = {team1.team_name:0, team2.team_name:0}
+                            game_location = game_loc.lstrip()
+                            game_location+=' '
+                            gloc = game_location
+                            game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_location}%')).first()
+                            if game_location is None:
+                                game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = self.game_prediction(gloc,'season_stats', team1, team2)
+                            else:    
+                                game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts= self.game_prediction(game_location.location,'season_stats', team1, team2)
+                            
+                            print(f"{game_winner} beats {game_loser} {win_pts:0.2f} to {loser_pts:0.2f} with a win probability of {win_pct:0.2f}")
+                            #store the probabilities for later
+                            if game_winner == team1.team_name:
+                                gw = team1 
+                                gl = team2 
+                            else:
+                                gw = team2
+                                gl = team1
+
+                            self.probability_dict[game_string][gw.team_name] = win_pct
+                            self.probability_dict[game_string][gl.team_name] = 1 - win_pct
+                            print(self.probability_dict[game_string])
+                            random_number = random.random()
+                            if game_winner == team1.team_name:
+                                if random_number < win_pct:
+                                    game_winner = team1
+                                else:
+                                    game_winner = team2
+                            else:
+                                if random_number < win_pct:
+                                    game_winner = team2
+                                else:
+                                    game_winner = team1
+
+                        for game, teams in self.game_mapper.items():
+                            if game_id in teams:
+                                
+                                self.mapping[next_round][region][game].append(game_winner)
+                                self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                                break
+            
+            elif rounds == 'Final Four':
+                ff_matchup = {'Game_1':[self.mapping['Final Four']['East'],self.mapping['Final Four']['West']],
+                              'Game_2':[self.mapping['Final Four']['Midwest'],self.mapping['Final Four']['South']]}
+                for game in ff_matchup:
+                    team1 = ff_matchup[game][0]
+                    team2 = ff_matchup[game][1]
+                    game_location = self.tourney_locs[rounds][game].lstrip()
+                    game_location+=' '
+                    gloc = game_location
+                    game_string = f"{team1.team_name} vs {team2.team_name}"
+                    if game_string in self.probability_dict:
+                        random_number = random.random()
+                        if random_number < self.probability_dict[game_string][team1.team_name]:
+                            game_winner = team1
+                        else:
+                            game_winner = team2
+                    else:
+                        self.probability_dict[game_string] = {team1.team_name:0, team2.team_name:0}
+                        game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_location}%')).first()
+                    
+                        if game_location is None:
+                            game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = self.game_prediction(gloc,'season_stats', team1, team2)
+                        else:    
+                            game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts= self.game_prediction(game_location.location,'season_stats', team1, team2)
+                        
+                        # print(f"{game_winner} beats {game_loser} {win_pts:0.2f} to {loser_pts:0.2f} with a win probability of {win_pct:0.2f}")
+                        if game_winner == team1.team_name:
+                            gw = team1
+                            gl = team2
+                        else:
+                            gw = team2
+                            gl = team1
+                        self.probability_dict[game_string][gw.team_name] = win_pct
+                        self.probability_dict[game_string][gl.team_name] = 1 - win_pct
+
+                        random_number = random.random()
+                        if random_number < win_pct:
+                            game_winner = team1
+                        else:
+                            game_winner = team2
+
+                    for game, teams in self.game_mapper.items():
+                        if game_id in teams:
+                            self.mapping['Championship'][game].append(game_winner)
+                            self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                            break
+            elif rounds == 'Championship':
+                team1 = self.mapping[rounds]['Game_1'][0]
+                team2 = self.mapping[rounds]['Game_1'][1]
+                game_location = self.tourney_locs[rounds][game].lstrip()
+                game_location+=' '
+                gloc = game_location
+                game_string = f"{team1.team_name} vs {team2.team_name}"
+                if game_string in self.probability_dict:
+                    random_number = random.random()
+                    if random_number < self.probability_dict[game_string][team1.team_name]:
+                        game_winner = team1
+                        print(f"{game_winner.team_name} beats {team2.team_name} to win the championship!")
+                    else:
+                        game_winner = team2
+                        print(f"{game_winner.team_name} beats {team1.team_name} to win the championship!")
+                    self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                    break
+                else:
+                    self.probability_dict[game_string] = {team1.team_name:0, team2.team_name:0}
+                game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_location}%')).first()
+                
+                if game_location is None:
+                    game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = self.game_prediction(gloc,'season_stats', team1, team2)
+                else:    
+                    game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts= self.game_prediction(game_location.location,'season_stats', team1, team2)
+              
+                    
+                    self.probability_dict[game_string][team1.team_name] = win_pct
+                    self.probability_dict[game_string][team2.team_name] = 1 - win_pct
+                    random_number = random.random()
+                    if random_number < win_pct:
+                        game_winner = team1
+                        print(f"{game_winner.team_name} beats {team2.team_name} to win the championship!")
+                    else:
+                        game_winner = team2
+                        print(f"{game_winner.team_name} beats {team1.team_name} to win the championship!")
+                    self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                    break
+
+            else:
+                next_round = self.game_rounds[self.game_rounds.index(rounds)+1]
+                for region in self.regions:
+                    for game in self.mapping[rounds][region]:
+                        # print(f"\n{game}\n")
+                        team1 = self.mapping[rounds][region][game][0]
+                        team2 = self.mapping[rounds][region][game][1]
+                        game_id=int(game.split('_')[-1])
+                        game_location = self.tourney_locs[rounds][region][game].lstrip()
+                        game_location+=' '
+                        gloc = game_location
+                        game_string = f"{team1.team_name} vs {team2.team_name}"
+                        if game_string in self.probability_dict:
+                            random_number = random.random()
+                            if random_number < self.probability_dict[game_string][team1.team_name]:
+                                game_winner = team1
+                            else:
+                                game_winner = team2
+                        else:
+                            self.probability_dict[game_string] = {team1.team_name:0, team2.team_name:0}
+                            game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_location}%')).first()
+
+                            team1 = team(team_name=team1.team_name, team_seed=team1.team_seed, region=team1.region)
+                            team2 = team(team_name=team2.team_name, team_seed=team2.team_seed, region=team2.region)
+                            
+                            if game_location is None:
+                                game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = self.game_prediction(gloc,'season_stats', team1, team2)
+                            else:    
+                                game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts= self.game_prediction(game_location.location,'season_stats', team1, team2)
+                            
+                            # print(f"{game_winner} beats {game_loser} {win_pts:0.2f} to {loser_pts:0.2f} with a win probability of {win_pct:0.2f}")
+
+                            if game_winner == team1.team_name:
+                                gw = team1
+                                gl = team2
+                            else:
+                                gw = team2
+                                gl = team1
+
+                            self.probability_dict[game_string][gw.team_name] = win_pct
+                            self.probability_dict[game_string][gl.team_name] = 1 - win_pct
+                            
+                            random_number = random.random()
+                            if random_number < win_pct:
+                                game_winner = team1
+                            else:
+                                game_winner = team2
+                        for game, teams in self.game_mapper.items():
+                            if game_id in teams:
+                                if next_round == 'Final Four':
+                                    self.mapping[next_round][game_winner.region] = game_winner
+                                elif next_round == 'Championship':
+                                    self.mapping[next_round]['Game_1'].append(game_winner)
+                                else:
+                                    self.mapping[next_round][region][game].append(game_winner)
+                                self.summary_stats.loc[game_winner.team_name, rounds]+=1
+                                break
+
+
 ###################################################################################################### 
 ##### --------------------------- STARTING THE TOURNAMENT ---------------------------------------- ###
 ######################################################################################################
@@ -216,6 +531,7 @@ Base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
 
+t1 = time.time()
 prob_mapper = {}
 
 tourney_locs = {'round of 32':{'East':{'Game_1':'Raleigh, NC',
@@ -263,267 +579,27 @@ tourney_locs = {'round of 32':{'East':{'Game_1':'Raleigh, NC',
                 'championship':{'Game_1':'San Antonio, TX'}
                                }
 
-game_rounds = ['round of 64','round of 32','sweet 16','Elite 8','final four','championship']
+game_rounds = ['round of 64','round of 32','Sweet 16','Elite 8','Final Four','Championship']
 summary_tournament = pd.DataFrame(columns = game_rounds,index=all_teams,data=0)
+
+ncaa_tournament = Tournament(seed_df = df, teams=all_teams, summary_stats=summary_tournament, num_games=NUM_GAMES, num_tournaments=1)
+
+
 good_regions = ['East','West','Midwest','South']
-NUM_TOURNAMENTS = 1
-for tidx in range(1,NUM_TOURNAMENTS+1):
-    t1 = time.time()
-    round_32 = {'East':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]},
-                'West':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]},
-                'Midwest':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]},
-                'South':{'Game_1':[],
-                        'Game_2':[],
-                        'Game_3':[],
-                        'Game_4':[]
-                        }
-                }
-    good_regions = ['East','West','Midwest','South']
-    for region in regions:
-        if region not in good_regions:
-            continue
-        # if region !='East':
-        #     continue
-        current_round = 'round of 64'
-        print(f"\n\n starting {current_round}\n\n")
-        for game in first_round:
-            sdf = df[(df['Game'] == game) & (df['Region']==region)]
-            game_loc = sdf['Location'].values[0].lstrip()
-            game_id = sdf['Game'].values[0]
-            team1 = team(team_name=sdf['Team'].values[0], team_seed=sdf['Seed'].values[0], region=region)
-            team2 = team(team_name=sdf['Team'].values[1], team_seed=sdf['Seed'].values[1], region=region)
+NUM_TOURNAMENTS = 100
 
-            game_location = game_location.lstrip()
-            game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_location}%')).first()
-            gloc = game_location
-            if game_location is None:
-                print(f"Game location {gloc} not found in database")
-                game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = predict_game(team1 = team1.team_name, team2 = team2.team_name, game_location = gloc, db_session = session, num_games = NUM_GAMES, season = 2025, over_under = None)
-            else:
+for i in range(NUM_TOURNAMENTS):
+    counter = i + 1
+    print(f"\nSimulating tournament {i+1} of {NUM_TOURNAMENTS}\n")
+    ncaa_tournament.simulate_tournament(counter)
 
-                print('\n********** Analyzing the following game **********\n')
-                print(f"{team1.team_name} vs {team2.team_name} at {game_location.location}\n")
-            
-                game_winner, win_pct, win_pts, game_loser, loser_pts, over_under, win_margin, total_pts = predict_game(team1 = team1.team_name, team2 = team2.team_name, game_location=game_location.location, db_session=session, num_games=NUM_GAMES, season=2025, over_under=None)
+ncaa_tournament.summary_stats = ncaa_tournament.summary_stats/NUM_TOURNAMENTS
 
-            
-            
-#             if prob_mapper[game.game_string][team1.team_name] ==0:
-#                 game.vary_stats()
-#             # ax.hist(game.team_data[team1.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team1.team_name)
-#             # ax.hist(game.team_data[team2.team_name]['adj_EM'], bins = 50, alpha = 0.5, label = team2.team_name)
-#             # ax.legend()
-#             # ax.set_title(f"adjusted offensive efficiency for {team1.team_name} and {team2.team_name}")
-#                 game.simulate_game()
-#             else: 
-#                 game.short_game()
-#             game.game_summary()
-#             # round_32[game.next_game].append(game.game_winner)
-#     # plt.show()
-#     # print(summary_tournament)
-            
-#     round_16 = {'East':{'Game_1':[],
-#                         'Game_2':[]},
-#                 'West':{'Game_1':[],
-#                         'Game_2':[]},
-#                 'Midwest':{'Game_1':[],
-#                         'Game_2':[]},
-#                 'South':{'Game_1':[],
-#                         'Game_2':[]}
-#     }
+t2 = time.time()
 
-#     # print(round_32)
-  
-#     current_round = 'round of 32'
-#     print(f"\n\n starting {current_round}\n\n")
-#     for region in good_regions:
+print(f"Time taken to simulate tournament: {t2-t1:0.2f} seconds")
+print(f"Summary of tournament: \n{ncaa_tournament.summary_stats}")
 
-#         for game, teams in round_32[region].items():
-#             game_loc = tourney_locs[current_round][region][game]
-#             # print(game_loc)
-#             team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-#             team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=round_16, next_round= 'sweet 16',current_round = 'round of 32', 
-#                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-#                         summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
-#             if prob_mapper[game.game_string][team1.team_name] ==0:
-#                 game.vary_stats()
-#                 game.simulate_game()
-#             else:
-#                 game.short_game()
-#             game.game_summary()
-#             # game.vary_stats()
-#             # game.simulate_game()
-#             # game.game_summary()
-
-
-#     round_8 = {'East':{'Game_1':[]},
-#             'West':{'Game_1':[]},
-#                 'Midwest':{'Game_1':[]},
-#                 'South':{'Game_1':[]}
-#     }
-#     # print(f"\n\n starting next round\n\n")
-#     current_round = 'sweet 16'
-#     print(f"\n\n starting {current_round}\n\n")
-#     for region in good_regions:
-
-#         for game, teams in round_16[region].items():
-#             game_loc = tourney_locs[current_round][region][game]
-#             team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-#             team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=round_8, next_round = 'Elite 8', current_round= current_round,
-#                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-#                         summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
-#             if prob_mapper[game.game_string][team1.team_name] ==0:
-#                 game.vary_stats()
-#                 game.simulate_game()
-#             else:
-#                 game.short_game()
-#             # game.vary_stats()
-#             # game.simulate_game()
-#             game.game_summary()
-
-#     final_four = {'East':None,
-#                 'West':None,
-#                 'Midwest':None,
-#                 'South':None}
-
-#     current_round = 'Elite 8'
-#     print(f"\n\n starting {current_round}\n\n")
-#     for region in good_regions:
-
-#         for game, teams in round_8[region].items():
-#             game_loc = tourney_locs[current_round][region][game]
-#             team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-#             team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-#             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=final_four, next_round = 'final four',current_round=current_round,
-#                         region=None, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-#                         summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
-#             if prob_mapper[game.game_string][team1.team_name] ==0:
-#                 game.vary_stats()
-#                 game.simulate_game()
-#             else:
-#                 game.short_game()
-#             # game.vary_stats()
-#             # game.simulate_game()
-#             game.game_summary()
-
-#     # print(final_four)
-#     current_round = 'final four'
-#     print(f"\n\n starting {current_round}\n\n")
-#     ff_matchup = {'Game_1':[final_four['East'],final_four['West']],
-#                 'Game_2':[final_four['Midwest'],final_four['South']]}
-
-#     championship = {'Game_1':[]}
-
-#     for game, teams in ff_matchup.items():
-#         game_loc = 'Phoenix, AZ'
-#         team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-#         team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-#         game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=championship, next_round = 'championship', current_round=current_round,
-#                     vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-#                     summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
-#         if prob_mapper[game.game_string][team1.team_name] ==0:
-#             game.vary_stats()
-#             game.simulate_game()
-#         else:
-#             game.short_game()
-#         # game.vary_stats()
-#         # game.simulate_game()
-#         game.game_summary()
-#     current_round = 'championship'
-#     print(f"\n\n starting {current_round}\n\n")
-#     for game,teams in championship.items():
-#         game_loc = 'Phoenix, AZ'
-#         team1 = team(team_name=teams[0].team_name, team_seed=teams[0].team_seed, region=teams[0].region)
-#         team2 = team(team_name=teams[1].team_name, team_seed=teams[1].team_seed, region=teams[1].region)
-#         game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=int(game.split('_')[-1]), game_round=None, next_round = None, current_round=current_round,
-#                     vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-#                     summary_stats=summary_tournament,tournament_sim=tidx,probability_dict=prob_mapper)
-#         game.vary_stats()
-#         game.simulate_game()
-#         game.game_summary()
-
-#         print(f"\n\n national champion is: {game.game_winner}!\n\n")
-    
-#     print(f"starting new tournament\n\n")
-#     print(f"%complete: {(tidx/NUM_TOURNAMENTS)*100:0.2f}%")
-#     print(summary_tournament)
-#     t2 = time.time()
-#     print(f"tournament {tidx} complete in {t2-t1:0.2f} seconds")
-
-# summary_tournament = summary_tournament/NUM_TOURNAMENTS
-# print(summary_tournament)
-
-# summary_tournament.to_excel('2024_tournament_summary.xlsx')
-# print('complete!')
-
-# round_32 = {'East':{'Game_1':[],
-#                     'Game_2':[],
-#                     'Game_3':[],
-#                     'Game_4':[]},
-#             'West':{'Game_1':[],
-#                     'Game_2':[],
-#                     'Game_3':[],
-#                     'Game_4':[]},
-#             'Midwest':{'Game_1':[],
-#                     'Game_2':[],
-#                     'Game_3':[],
-#                     'Game_4':[]},
-#             'South':{'Game_1':[],
-#                     'Game_2':[],
-#                     'Game_3':[],
-#                     'Game_4':[]
-#                     }
-#             }
-# final_four = {'East':None,
-#             'West':None,
-#             'Midwest':None,
-#             'South':None}
-
-# # for region in regions:
-# #         if region not in good_regions:
-# #             continue
-# #         # if region !='East':
-# #         #     continue
-# #         current_round = 'round of 64'
-# #         # print(f"\n\n starting {current_round}\n\n")
-# #         for game in first_round:
-# #             # fig, ax = plt.subplots()
-# #             sdf = df[(df['Game'] == game) & (df['Region']==region)]
-# #             game_loc = sdf['Location'].values[0]
-# #             game_id = sdf['Game'].values[0]
-# #             team1 = team(team_name=sdf['Team'].values[0], team_seed=sdf['Seed'].values[0], region=region)
-# #             team2 = team(team_name=sdf['Team'].values[1], team_seed=sdf['Seed'].values[1], region=region)
-# #             game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=game_id, game_round=round_32, next_round = 'round of 32',current_round = current_round,
-# #                         region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-# #                         summary_stats=summary_tournament,tournament_sim=1,probability_dict=prob_mapper)
-# #             teams = [team1, team2]
-# #             if 'TCU Horned Frogs' in [team.team_name for team in teams]:
-# #                 game.vary_stats()
-# #                 game.simulate_game()
-# #                 game.game_summary()
-
-# current_round = 'final four'
-# # game_loc = 'Charlotte, NC'
-# line = 146.5
-# region = None
-# team1 = team(team_name='UConn Huskies', team_seed = 1, region=region)
-# team2 = team(team_name='Alabama Crimson Tide', team_seed = 4, region=region)
-# game_loc = tourney_locs[current_round]['Game_1']
-
-# game = matchup(team1, team2, game_location=game_loc, num_games=NUM_GAMES, game_id=1, game_round=final_four, next_round = 'championship',current_round = current_round,
-#             region=region, vary_params=VARY_PARAMS, model_params=NN_PARAMS, season_data=MODEL_DF, ridge_df=RIDGE_DF, standardizer=SCALER,
-#             summary_stats=summary_tournament,tournament_sim=1,probability_dict=prob_mapper, line = line)
-# game.vary_stats()
-# game.simulate_game()
-# game.game_summary()
+print(ncaa_tournament.summary_stats['Championship'].sort_values(ascending=False).head(10))
+# for tidx in range(1,NUM_TOURNAMENTS+1):
+#     t1 = time.time()
