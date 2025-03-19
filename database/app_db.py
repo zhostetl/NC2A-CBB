@@ -22,7 +22,7 @@ class AppDB:
     
     def games_by_season(self, season, conference_value=None):
         
-        keep_cols = ['date','team_name','opponent_name','points','win']
+        keep_cols = ['date','team_name','opponent_name','game_state','points','win']
 
         
         # season_data = session.query(Games, AdjustedMetrics, Teams).join(AdjustedMetrics, (Games.game_id == AdjustedMetrics.game_id) & (Games.team_id == AdjustedMetrics.team_id)).join(Teams, Games.team_id==Teams.id).filter(Games.season_id == season_id.id).all()
@@ -42,4 +42,13 @@ class AppDB:
         df = df[keep_cols]
         return df
         
+    def matchup_data(self, data_table):
+        opponent = data_table['opponent_name']
+        home_team = data_table['team_name']
+        game_loc = data_table['game_state']
+        
+        team1 = self.session.query(Teams).filter(Teams.espn_name.ilike(f'%{opponent}%')).first()
+        team2 = self.session.query(Teams).filter(Teams.espn_name.ilike(f'%{home_team}%')).first()
+        game_location = session.query(GameLocations).filter(GameLocations.location.ilike(f'%{game_loc}%')).first()
+        return team1,team2,game_location
 

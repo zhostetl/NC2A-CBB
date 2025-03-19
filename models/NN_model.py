@@ -16,6 +16,24 @@ class NN_Model():
     def __init__(self):
         self.model = None
 
+    def build_stats_model(self,input_features=None,output_features=None):
+        self.params = input_features
+        add_layers = 60
+        # add_layers = 60
+        #build the model
+        self.model = nn.Sequential(
+        nn.Linear(len(input_features), add_layers),
+        # nn.ReLU(),
+        nn.Sigmoid(),
+        nn.Linear(add_layers, 100),
+        # nn.ReLU(),
+        nn.Sigmoid(),
+        nn.Linear(100, add_layers),
+        nn.Sigmoid(),
+        nn.Linear(add_layers, len(output_features))
+        )
+
+    
     def build_model(self, input_features = None): 
         self.params = input_features
         add_layers = 40
@@ -34,7 +52,7 @@ class NN_Model():
         )
 
     def train_model(self, num_epochs = 500, learning_rate = 0.05, criterion = nn.MSELoss(),
-                    X = None, y = None, test_size = 0.2, random_state = 42): 
+                    X = None, y = None, test_size = 0.2, random_state = 42, normalize_output = False): 
         # Loss and optimizer
         self.criterion = criterion
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=learning_rate)
@@ -45,11 +63,14 @@ class NN_Model():
         self.scaler = StandardScaler()
         X = self.scaler.fit_transform(X)
 
+        if normalize_output:
+            self.output_scalar = StandardScaler()
+            y = self.output_scalar.fit_transform(y)
+
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
         print(f"Size of training data: {X.shape}\nX_train shape: {X_train.shape}\nX_test shape: {X_test.shape}\ny_train shape: {y_train.shape}\ny_test shape: {y_test.shape}")
 
-        # y = scaler.fit_transform(y)
         # Convert X and y to Tensors
         X_train = torch.from_numpy(X_train.astype(np.float32))
         X_test = torch.from_numpy(X_test.astype(np.float32))

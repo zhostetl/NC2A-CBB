@@ -59,7 +59,7 @@ params = ['distance_traveled',
           'opp_adj_efg_percentage','opp_adj_turnover_percentage','adj_def_rebound_percentage','opp_adj_free_throw_rate',
           'pace','total_turnovers','fouls', 'steals','blocks','rebounds','assists',
           'two_point_field_goal_percentage','three_point_field_goal_percentage', 'free_throw_percentage',
-          'possessions','home','away']
+          'possessions','home','away','neutral']
 
 y = ['points']
 # Prepare the data

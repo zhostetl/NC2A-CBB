@@ -28,7 +28,7 @@ def query_db(session, season):
     season_year = session.query(Season).filter(Season.year == season).first()
 
     game_ids = session.query(GameID).filter(GameID.season_id == season_year.year).all()
-    print(f"Number of game IDs in {season}: {len(game_ids)} from GameID table")
+    # print(f"Number of game IDs in {season}: {len(game_ids)} from GameID table")
     games = session.query(Games).filter(Games.season_id == season_year.id).all()
     print(f"Number of games in {season}: {len(games)} from Games table")
     team_alias = aliased(Teams)
@@ -43,7 +43,7 @@ def query_db(session, season):
         opponent_conf_alias, Games.opponent_conference_id == opponent_conf_alias.id).filter(
         Games.season_id == season_year.id).all()
     
-    # print(f"Number of games in {season}: {len(season_data)} from Games table")
+    print(f"Number of games in {season}: {len(season_data)} from Games table")
 
     """
     There are some game ids that do not get converted to the games table because one of the teams is not a D1 team and does not have the correct data in the database. That is why the games table will be shorter than the game ids table
@@ -230,7 +230,7 @@ for metric in adjusted_metrics:
             ridge_value.conference_value = conference_value
             ridge_value.home_value = home_value
             ridge_value.away_value = away_value
-            session.commit()
+    session.commit()
 
             # ridge_value = RidgeResults(metric_id = metric_id, season_id = season_id, opponent_id = opponent_id, opponent_value = opponent_value, conference_id = conference_id, conference_value = conference_value, home_value = home_value, away_value = away_value)
     #         session.add(ridge_value)
@@ -285,7 +285,6 @@ for idx, row in df.iterrows():
         # session.commit()
    
     else:
-
         adjusted_game = AdjustedMetrics(game_id = game_id, team_id = team_id,
                                         adj_efg_percentage = adj_efg_percentage, adj_turnover_percentage = adj_turnover_percentage,
                                         adj_offensive_rebound_percentage = adj_offensive_rebound_percentage, adj_free_throw_rate = adj_free_throw_rate,
